@@ -1,81 +1,61 @@
 import Link from "next/link";
 import { getCurrentStaff } from "@/lib/auth/context";
+import ThemeToggle from "@/components/ThemeToggle";
+import LandingStoryClient from "@/components/LandingStoryClient";
 
-// The root page does a server-side auth lookup (to show staff identity vs a
-// sign-in link), so it cannot be statically prerendered against an env-less
-// build sandbox — mark it dynamic.
+// Force dynamic — auth lookup is server-side
 export const dynamic = "force-dynamic";
 
 export default async function RootPage() {
   const staff = await getCurrentStaff();
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-8 p-6 text-center">
-      <div>
-        <h1 className="text-4xl font-bold tracking-tight">MediServ</h1>
-        <p className="mt-2 text-lg text-gray-600">
-          District PHC/CHC Resource & Early-Warning Platform
-        </p>
-      </div>
+    <div className="min-h-screen bg-ms-bg">
+      {/* ── Fixed top nav ── */}
+      <nav className="fixed inset-x-0 top-0 z-50 border-b border-ms-border bg-ms-surface/80 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-content items-center justify-between px-4 py-3 sm:px-6">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-ms-sm bg-brand text-white">
+              <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                <path d="M12 12v4M12 8v2M9 12h6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <span className="text-base font-semibold tracking-tight text-ms-textPrimary">
+              Vyas
+            </span>
+          </div>
 
-      <p className="max-w-xl text-sm text-gray-500">
-        Offline-first resource monitoring. Pick an entry point below — staff
-        routes are role-gated, the public lookup needs no login.
-      </p>
-
-      <nav className="grid w-full gap-3 sm:grid-cols-2">
-        <Link
-          href="/staff"
-          className="rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-gray-400"
-        >
-          <span className="block font-semibold">Staff</span>
-          <span className="block text-sm text-gray-500">
-            Nurse / pharmacist data entry
-          </span>
-        </Link>
-        <Link
-          href="/doctor"
-          className="rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-gray-400"
-        >
-          <span className="block font-semibold">Doctor</span>
-          <span className="block text-sm text-gray-500">
-            Attendance check-in / out
-          </span>
-        </Link>
-        <Link
-          href="/admin"
-          className="rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-gray-400"
-        >
-          <span className="block font-semibold">District Admin</span>
-          <span className="block text-sm text-gray-500">
-            Live flagged-centre dashboard
-          </span>
-        </Link>
-        <Link
-          href="/public"
-          className="rounded-lg border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-gray-400"
-        >
-          <span className="block font-semibold">Public Lookup</span>
-          <span className="block text-sm text-gray-500">
-            No login — medicine / bed / doctor availability
-          </span>
-        </Link>
+          {/* Right controls */}
+          <div className="flex items-center gap-3">
+            {staff ? (
+              <span className="hidden text-sm text-ms-textSecondary sm:block">
+                {staff.name} · {staff.role}
+              </span>
+            ) : null}
+            <ThemeToggle />
+            {staff ? (
+              <a
+                href="/sign-out"
+                className="rounded-ms-sm border border-ms-border px-3 py-2 text-sm font-medium text-ms-textSecondary transition-colors hover:border-brand hover:text-brand"
+              >
+                Sign out
+              </a>
+            ) : (
+              <Link
+                href="/login"
+                className="rounded-ms-sm bg-brand px-4 py-2 text-sm font-semibold text-white shadow-brand transition-all hover:bg-brand-hover active:scale-95"
+              >
+                Staff Sign-in
+              </Link>
+            )}
+          </div>
+        </div>
       </nav>
 
-      <div className="text-sm text-gray-500">
-        {staff ? (
-          <span>
-            Signed in as {staff.name} ({staff.role}).{" "}
-            <a href="/sign-out" className="underline">
-              Sign out
-            </a>
-          </span>
-        ) : (
-          <a href="/login" className="underline">
-            Staff sign-in
-          </a>
-        )}
-      </div>
-    </main>
+      {/* ── Story sections (client for scroll-reveal) ── */}
+      <LandingStoryClient staff={staff ? { name: staff.name, role: staff.role } : null} />
+    </div>
   );
 }

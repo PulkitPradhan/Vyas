@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSync } from "@/lib/offline/sync-provider";
 import { createClient } from "@/lib/supabase/client";
 import SeverityBadge from "./SeverityBadge";
@@ -13,23 +13,33 @@ interface Props {
   language: "en" | "hi";
 }
 
-// Live flag list + suggestion cards. Subscribes to Supabase Realtime on the
-// `flags` table (ADR-004) so a newly-raised flag appears within the same minute
-// a pharmacist logs a stock-out — the demo's central "real-time" claim.
 export default function FlagsList({ initialFlags, initialSuggestions, language }: Props) {
   const [flags, setFlags] = useState<FlagRow[]>(initialFlags);
   const [suggestions, setSuggestions] = useState<SuggestionRow[]>(initialSuggestions);
   const [busy, setBusy] = useState<Record<string, boolean>>({});
+  const [newFlagIds, setNewFlagIds] = useState<Set<string>>(new Set());
   const { online } = useSync();
+  const prevFlagIds = useRef<Set<string>>(new Set(initialFlags.map(f => f.id)));
 
-  // Refresh the full ordered list from the server (simpler + still real-time;
-  // a row-level Realtime payload only carries the changed row's id, so a
-  // uniform re-fetch keeps facility-name joins coherent).
   const refreshFlags = useCallback(async () => {
     const res = await fetch("/api/admin/flags", { method: "POST" });
     if (!res.ok) return;
     const data = (await res.json()) as { flags: FlagRow[] };
-    if (data?.flags) setFlags(data.flags);
+    if (!data?.flags) return;
+    // Find newly arrived flags for slide-in animation
+    const incoming = new Set(data.flags.map(f => f.id));
+    const arrived = data.flags.filter(f => !prevFlagIds.current.has(f.id)).map(f => f.id);
+    if (arrived.length) {
+      setNewFlagIds(prev => new Set([...prev, ...arrived]));
+      // Clear highlight after 1.5s
+      setTimeout(() => setNewFlagIds(prev => {
+        const next = new Set(prev);
+        arrived.forEach(id => next.delete(id));
+        return next;
+      }), 1500);
+    }
+    prevFlagIds.current = incoming;
+    setFlags(data.flags);
   }, []);
 
   useEffect(() => {
@@ -37,115 +47,107 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
       const supabase = createClient();
       const channel = supabase
         .channel("flags-realtime")
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "flags" },
-          () => {
-            // Debounce isn't critical for a district dashboard; a re-fetch per
-            // event is bounded by staff write volume.
-            void refreshFlags();
-          }
-        )
+        .on("postgres_changes", { event: "*", schema: "public", table: "flags" }, () => {
+          void refreshFlags();
+        })
         .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    } catch {
-      // No Supabase env configured (build/dev) — the initial server-fetched
-      // list still renders; live updates just won't push.
-    }
+      return () => { supabase.removeChannel(channel); };
+    } catch { /* no supabase env in build */ }
   }, [refreshFlags]);
 
   const reasonFor = (f: FlagRow) => {
     const text = language === "hi" ? f.reason_text_hi : f.reason_text_en;
     if (text) return text;
-    // ADR-005: reason_text may still be null if Gemini hasn't run or failed.
-    // Show the raw computed context instead of a blank space, so the admin
-    // never sees an unexplained flag.
-    return rawReasonFallback(f);
+    switch (f.category) {
+      case "stock":  return `Low-stock projection flagged (${f.severity}). AI explanation pending.`;
+      case "bed":    return `Bed occupancy at/over threshold (${f.severity}).`;
+      case "doctor": return `No doctor check-in past cutoff (${f.severity}).`;
+      case "test":   return `Equipment/test non-functional (${f.severity}).`;
+      default:       return `Flag raised (${f.severity}).`;
+    }
   };
 
-  function rawReasonFallback(f: FlagRow): string {
-    switch (f.category) {
-      case "stock":
-        return `Low-stock projection flagged (${f.severity}). Reason pending AI explanation.`;
-      case "bed":
-        return `Bed occupancy at/over threshold (${f.severity}).`;
-      case "doctor":
-        return `No doctor check-in past cutoff (${f.severity}).`;
-      case "test":
-        return `Equipment/test non-functional (${f.severity}).`;
-      default:
-        return `Flag raised (${f.severity}).`;
-    }
-  }
+  const shadowMap: Record<string, string> = {
+    critical: "shadow-critical",
+    warning:  "shadow-warning",
+    watch:    "shadow-[0_2px_8px_rgba(0,0,0,0.06),0_4px_16px_rgba(46,139,87,0.18)]",
+  };
 
   async function handleSuggestion(id: string, status: "actioned" | "dismissed") {
-    setBusy((b) => ({ ...b, [`s:${id}`]: true }));
+    setBusy(b => ({ ...b, [`s:${id}`]: true }));
     const res = await updateSuggestionStatus(id, status);
-    if (res.ok) {
-      setSuggestions((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status } : s))
-      );
-    }
-    setBusy((b) => {
-      const next = { ...b };
-      delete next[`s:${id}`];
-      return next;
-    });
+    if (res.ok) setSuggestions(prev => prev.map(s => s.id === id ? { ...s, status } : s));
+    setBusy(b => { const next = { ...b }; delete next[`s:${id}`]; return next; });
   }
 
   async function handleResolveFlag(id: string) {
-    setBusy((b) => ({ ...b, [`f:${id}`]: true }));
+    setBusy(b => ({ ...b, [`f:${id}`]: true }));
     const res = await resolveFlag(id);
-    if (res.ok) {
-      setFlags((prev) => prev.filter((f) => f.id !== id));
-    }
-    setBusy((b) => {
-      const next = { ...b };
-      delete next[`f:${id}`];
-      return next;
-    });
+    if (res.ok) setFlags(prev => prev.filter(f => f.id !== id));
+    setBusy(b => { const next = { ...b }; delete next[`f:${id}`]; return next; });
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* ── Flags section ── */}
       <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Live Flags</h2>
-          <span className="text-sm text-gray-500">
-            {online ? "real-time" : "offline — will refresh on reconnect"}
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-admin-lg font-semibold text-ms-textPrimary">Live Flags</h2>
+          <span className={`flex items-center gap-1.5 text-admin-xs ${
+            online ? "text-watch" : "text-warning"
+          }`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${
+              online ? "bg-watch animate-pulse" : "bg-warning"
+            }`} aria-hidden="true" />
+            {online ? "real-time" : "offline — refreshes on reconnect"}
           </span>
         </div>
 
         {flags.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-gray-300 bg-white p-6 text-center text-gray-500">
-            No unresolved flags in your district. Everything looks healthy.
-          </p>
+          <div className="flex flex-col items-center gap-3 rounded-ms-md border border-dashed border-ms-border bg-ms-surface p-10 text-center">
+            <svg viewBox="0 0 24 24" fill="none" className="h-10 w-10 text-ms-textDisabled" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <p className="text-admin-sm font-medium text-ms-textSecondary">All clear — no unresolved flags in your district.</p>
+          </div>
         ) : (
           <ul className="grid gap-3 lg:grid-cols-2">
             {flags.map((f) => (
               <li
                 key={f.id}
-                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                className={`
+                  ms-tilt-card rounded-ms-md border border-ms-border bg-ms-surface p-4
+                  ${shadowMap[f.severity] ?? "shadow-card"}
+                  ${newFlagIds.has(f.id) ? "animate-slide-in ms-highlight-pulse" : ""}
+                `}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2; // -1 to 1
+                  const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+                  e.currentTarget.style.transform = `perspective(800px) rotateY(${x * 2}deg) rotateX(${-y * 2}deg) scale(1.005)`;
+                }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = ""; }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-gray-900">{f.facility_name}</span>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-ms-textPrimary">{f.facility_name}</p>
+                    <p className="mt-0.5 text-admin-xs uppercase tracking-wide text-ms-textDisabled">{f.category}</p>
+                  </div>
                   <SeverityBadge severity={f.severity} />
                 </div>
-                <p className="mt-2 text-sm text-gray-600">{reasonFor(f)}</p>
-                <div className="mt-3 flex items-center justify-between text-xs text-gray-400">
-                  <span>
-                    {f.category} · {new Date(f.created_at).toLocaleString()}
-                  </span>
+                <p className={`mt-2 text-admin-sm text-ms-textSecondary ${
+                  language === "hi" ? "font-hindi" : ""
+                }`}>{reasonFor(f)}</p>
+                <div className="mt-3 flex items-center justify-between text-admin-xs text-ms-textDisabled">
+                  <span>{new Date(f.created_at).toLocaleString()}</span>
                   <button
+                    id={`resolve-flag-${f.id}`}
                     type="button"
                     onClick={() => handleResolveFlag(f.id)}
                     disabled={!!busy[`f:${f.id}`]}
-                    className="rounded-md border border-gray-300 px-2 py-1 hover:bg-gray-50 disabled:opacity-50"
+                    className="rounded-ms-sm border border-ms-border px-3 py-1.5 transition-colors hover:border-brand hover:text-brand disabled:opacity-50"
                   >
-                    Mark resolved
+                    {busy[`f:${f.id}`] ? "Resolving…" : "Mark resolved"}
                   </button>
                 </div>
               </li>
@@ -154,45 +156,59 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
         )}
       </section>
 
+      {/* ── Redistribution suggestions ── */}
       <section>
-        <h2 className="mb-3 text-xl font-semibold">Redistribution Suggestions</h2>
+        <h2 className="mb-4 text-admin-lg font-semibold text-ms-textPrimary">Redistribution Suggestions</h2>
         {suggestions.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-gray-300 bg-white p-6 text-center text-gray-500">
-            No redistribution suggestions pending.
-          </p>
+          <div className="flex flex-col items-center gap-3 rounded-ms-md border border-dashed border-ms-border bg-ms-surface p-8 text-center">
+            <p className="text-admin-sm text-ms-textSecondary">No redistribution suggestions pending.</p>
+          </div>
         ) : (
-          <ul className="grid gap-3 lg:grid-cols-3">
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {suggestions.map((s) => (
               <li
                 key={s.id}
-                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                className="ms-tilt-card rounded-ms-md border border-ms-border bg-ms-surface p-4 shadow-card"
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+                  const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+                  e.currentTarget.style.transform = `perspective(800px) rotateY(${x * 2}deg) rotateX(${-y * 2}deg) scale(1.005)`;
+                }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = ""; }}
               >
-                <p className="font-semibold">{s.item_name}</p>
-                <p className="mt-1 text-sm text-gray-600">
-                  {s.from_facility_name} → {s.to_facility_name}
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  Suggest <strong>{s.suggested_qty}</strong> · {s.distance_km} km
+                <p className="font-semibold text-ms-textPrimary">{s.item_name}</p>
+                <div className="mt-2 flex items-center gap-1.5 text-admin-xs text-ms-textSecondary">
+                  <span className="truncate">{s.from_facility_name}</span>
+                  <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 flex-shrink-0" aria-hidden="true">
+                    <path fillRule="evenodd" d="M2 8a.75.75 0 01.75-.75h8.69L8.22 4.03a.75.75 0 011.06-1.06l4.5 4.5a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06-1.06l3.22-3.22H2.75A.75.75 0 012 8z" clipRule="evenodd"/>
+                  </svg>
+                  <span className="truncate">{s.to_facility_name}</span>
+                </div>
+                <p className="mt-1 text-admin-xs text-ms-textSecondary">
+                  Qty: <strong>{s.suggested_qty}</strong> · {s.distance_km} km
                 </p>
                 <div className="mt-3 flex gap-2">
                   <button
+                    id={`action-suggestion-${s.id}`}
                     type="button"
                     onClick={() => handleSuggestion(s.id, "actioned")}
                     disabled={!!busy[`s:${s.id}`] || s.status !== "pending"}
-                    className="rounded-md bg-watch px-2 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-40"
+                    className="flex-1 rounded-ms-sm bg-brand px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-40"
                   >
-                    Actioned
+                    ✓ Actioned
                   </button>
                   <button
+                    id={`dismiss-suggestion-${s.id}`}
                     type="button"
                     onClick={() => handleSuggestion(s.id, "dismissed")}
                     disabled={!!busy[`s:${s.id}`] || s.status !== "pending"}
-                    className="rounded-md border border-gray-300 px-2 py-1 text-xs hover:bg-gray-50 disabled:opacity-40"
+                    className="flex-1 rounded-ms-sm border border-ms-border px-3 py-2 text-xs font-medium transition-colors hover:bg-ms-surface2 disabled:opacity-40"
                   >
-                    Dismissed
+                    Dismiss
                   </button>
                   {s.status !== "pending" && (
-                    <span className="ml-auto self-center text-xs uppercase text-gray-400">
+                    <span className="self-center text-xs font-medium uppercase text-ms-textDisabled">
                       {s.status}
                     </span>
                   )}

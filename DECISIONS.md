@@ -7,7 +7,7 @@
 **Status:** Accepted
 
 **Context**
-MediServ must go from zero to a working, demoable, multi-persona system (nurse, pharmacist, doctor, patient, district admin) inside a hackathon timeline, then survive first real district pilots without a platform rewrite. A "proper hospital SaaS" instinct pulls toward a services-per-domain split (stock service, attendance service, notification service, AI service). That instinct is wrong for this stage: it multiplies deploy surfaces, network failure modes, and debugging time for a team that needs to spend its hours on the offline-sync and AI-explanation logic that actually differentiates the product.
+Vyas must go from zero to a working, demoable, multi-persona system (nurse, pharmacist, doctor, patient, district admin) inside a hackathon timeline, then survive first real district pilots without a platform rewrite. A "proper hospital SaaS" instinct pulls toward a services-per-domain split (stock service, attendance service, notification service, AI service). That instinct is wrong for this stage: it multiplies deploy surfaces, network failure modes, and debugging time for a team that needs to spend its hours on the offline-sync and AI-explanation logic that actually differentiates the product.
 
 **Decision**
 Keep a single Next.js application (App Router) using API Routes and Server Actions as the entire backend. No standalone services, no API gateway, no service mesh.
@@ -47,7 +47,7 @@ Adopt Supabase as the single backend-as-a-service layer: Postgres for all relati
 
 **Rationale**
 - Collapses four operational surfaces into one, which is a direct reduction in what can fail during a live demo or a low-connectivity district rollout.
-- Postgres gives MediServ real relational integrity (foreign keys between `facilities`, `stock_items`, `flags`) that a looser NoSQL choice would force the application layer to re-implement.
+- Postgres gives Vyas real relational integrity (foreign keys between `facilities`, `stock_items`, `flags`) that a looser NoSQL choice would force the application layer to re-implement.
 - RLS pushes access control into the database itself rather than scattering `if (user.role === ...)` checks across API routes — this matters specifically because a nurse writing to another facility's stock table is not just a bug, it's a data-integrity incident a district admin would notice and lose trust over.
 - Free-tier availability removes cost as a blocker during the pilot phase, which is a real adoption factor for a public-sector tool with no committed budget yet.
 
@@ -73,7 +73,7 @@ If a government data-residency mandate requires on-premise or India-region-only 
 **Status:** Accepted
 
 **Context**
-This is the single most consequential decision in the system. PHC/CHC staff work with zero or intermittent signal as the *normal* condition, not an edge case. Most field health-data tools fail in exactly this gap: they render a blank screen or a spinner the moment signal drops, so staff quietly revert to the paper register — which is the entire problem MediServ exists to solve.
+This is the single most consequential decision in the system. PHC/CHC staff work with zero or intermittent signal as the *normal* condition, not an edge case. Most field health-data tools fail in exactly this gap: they render a blank screen or a spinner the moment signal drops, so staff quietly revert to the paper register — which is the entire problem Vyas exists to solve.
 
 **Decision**
 Every write action (stock update, bed toggle, attendance check-in/out) is written to an IndexedDB queue first, with optimistic UI update, and synced to Supabase only when connectivity returns. A service worker caches the app shell so the app opens with zero signal at all.
@@ -129,7 +129,7 @@ The district admin's core need — see a flagged centre the moment it's flagged,
 - Risks & Mitigations: none significant at district scale; Supabase Realtime is proven at far higher connection counts than this deployment will reach.
 
 **When to Revisit**
-If MediServ needs cross-district or national-scale realtime fan-out with custom event routing logic beyond table-change subscriptions.
+If Vyas needs cross-district or national-scale realtime fan-out with custom event routing logic beyond table-change subscriptions.
 
 ---
 
@@ -191,7 +191,7 @@ The generative tasks in this system are narrow and well-specified (turn structur
 
 **Consequences**
 - Positive: zero marginal cost during pilot phase; multilingual explanation and chat "for free" relative to build effort.
-- Negative: free-tier rate limits and availability are outside MediServ's control; not suitable as-is for a paid, SLA-backed production deployment.
+- Negative: free-tier rate limits and availability are outside Vyas's control; not suitable as-is for a paid, SLA-backed production deployment.
 - Risks & Mitigations: because forecasting/flagging logic never depends on the LLM (ADR-005), a Gemini outage degrades explanation quality, not system correctness — flags still fire with raw numbers even if the friendly sentence fails to generate.
 
 **When to Revisit**
@@ -258,7 +258,7 @@ The patient-facing lookup and chatbot require zero authentication. No citizen ac
 - Risks & Mitigations: none material at this scope; proactive notification is explicitly a roadmap item, not a current gap.
 
 **When to Revisit**
-If/when MediServ scope expands toward patient-specific notifications or ABDM-linked citizen accounts (see DESIGN.md §10 roadmap) — and even then, lookup should remain login-free.
+If/when Vyas scope expands toward patient-specific notifications or ABDM-linked citizen accounts (see DESIGN.md §10 roadmap) — and even then, lookup should remain login-free.
 
 ---
 
@@ -299,7 +299,7 @@ Before any district pilot in an area with confirmed zero-data/SMS-only coverage 
 **Status:** Accepted
 
 **Context**
-A "proper" healthcare data model reflex reaches for ICU/NICU/ventilator bed sub-types, categorized equipment taxonomies (CT/MRI/ECG), and a full patient/EHR entity. PHCs and CHCs — the actual deployment target — mostly don't have these sub-categories of infrastructure at all, and MediServ explicitly isn't an EHR (that's ABDM's and the hospital-EHR ecosystem's job, per Section 13).
+A "proper" healthcare data model reflex reaches for ICU/NICU/ventilator bed sub-types, categorized equipment taxonomies (CT/MRI/ECG), and a full patient/EHR entity. PHCs and CHCs — the actual deployment target — mostly don't have these sub-categories of infrastructure at all, and Vyas explicitly isn't an EHR (that's ABDM's and the hospital-EHR ecosystem's job, per Section 13).
 
 **Decision**
 Bed availability is `total / occupied / available`, no sub-types. Test/equipment availability is a binary `is_functional: Y/N` per test type, not a hardcoded taxonomy. No patient/EHR entity exists at all — only an anonymous `footfall_logs` counter.
@@ -307,7 +307,7 @@ Bed availability is `total / occupied / available`, no sub-types. Test/equipment
 **Rationale**
 - Modeling infrastructure a PHC doesn't have is not neutral extra flexibility — it's UI and data-entry burden imposed on every nurse, every day, for fields that will sit permanently empty at most facilities.
 - The binary functional/non-functional model for test equipment answers the one question a patient or admin actually has ("can I get this test done here today"), without requiring the app to maintain a taxonomy of every possible diagnostic machine.
-- Explicitly not building a patient/EHR entity is a domain-boundary decision, not a missing feature: it keeps MediServ a resource/operations layer that can sit *on top of* ABDM's registry rather than duplicating or competing with the EHR/health-ID ecosystem the government already runs (Section 13).
+- Explicitly not building a patient/EHR entity is a domain-boundary decision, not a missing feature: it keeps Vyas a resource/operations layer that can sit *on top of* ABDM's registry rather than duplicating or competing with the EHR/health-ID ecosystem the government already runs (Section 13).
 - Simpler schemas here directly reduce the compliance surface area for sensitive personal health data — there is no patient-identifiable medical record in this system to protect, because there is no patient-identifiable medical record in this system, full stop.
 
 **Alternatives Considered**
@@ -319,11 +319,11 @@ Bed availability is `total / occupied / available`, no sub-types. Test/equipment
 
 **Consequences**
 - Positive: minimal data-entry burden matching real facility capability; near-zero patient-PII compliance surface; schema that fits CHCs too where sub-types would apply, without forcing PHCs to fill them in.
-- Negative: if MediServ later needs to serve larger CHCs/district hospitals with genuine ICU/ventilator tracking, the flat model will need extension.
+- Negative: if Vyas later needs to serve larger CHCs/district hospitals with genuine ICU/ventilator tracking, the flat model will need extension.
 - Risks & Mitigations: `test_availability` and `bed_status` are both structured so that adding an optional sub-type field later (nullable, CHC-only) is additive, not a breaking migration.
 
 **When to Revisit**
-When MediServ's scope explicitly extends to district hospitals or CHCs with genuine ICU/NICU/specialized-equipment infrastructure worth tracking separately.
+When Vyas's scope explicitly extends to district hospitals or CHCs with genuine ICU/NICU/specialized-equipment infrastructure worth tracking separately.
 
 ---
 
@@ -379,6 +379,6 @@ Redistribution suggestions use straight-line (Haversine) distance between facili
 - Risks & Mitigations: this is an accepted approximation for a *suggestion*, not an automated transfer — a human admin makes the final call with local road knowledge the system doesn't need to encode.
 
 **When to Revisit**
-If MediServ ever automates transfer logistics (rather than suggesting candidates to a human admin), or if the future ambulance/SOS routing roadmap item is built and a routing engine is introduced for that purpose anyway.
+If Vyas ever automates transfer logistics (rather than suggesting candidates to a human admin), or if the future ambulance/SOS routing roadmap item is built and a routing engine is introduced for that purpose anyway.
 
 ---

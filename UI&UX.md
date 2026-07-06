@@ -1,10 +1,10 @@
-# UI&UX.md — MediServ Design System
+# UI&UX.md — Vyas Design System
 
 ## 0. Read This First
 
 The requested visual language — dark OLED neon, intense glassmorphism, cursor-tracking magnetic UI, bento grids, curtain footers, kinetic typography — is built for premium consumer SaaS marketing surfaces (Apple product pages, subscription app landing screens). It's genuinely excellent design language, for a different job.
 
-MediServ has three real surfaces, and none of them are that job:
+Vyas has three real surfaces, and none of them are that job:
 
 1. **Field App** (nurse/pharmacist/doctor) — cheap Android phone, outdoors, bright sunlight, patchy 2G/3G, seconds per interaction.
 2. **Patient/Citizen Lookup** — mixed devices, possibly low digital literacy, mobile, no login.
@@ -14,7 +14,7 @@ Implementing the requested spec literally would fight constraints already locked
 - Dark mode + neon glow is close to unreadable in direct sunlight — the field app's actual operating condition.
 - Heavy `backdrop-filter` blur is one of the most expensive render operations you can ask of a budget Android WebView — directly undermines ADR-003's offline-first, low-end-device performance requirement.
 - Cursor-proximity and magnetic UI assume a mouse; this app is touch-first almost everywhere.
-- Bento grids, curtain footers, and deck-of-cards scroll are conversion-page patterns; MediServ's screens are task tools, not a scroll journey.
+- Bento grids, curtain footers, and deck-of-cards scroll are conversion-page patterns; Vyas's screens are task tools, not a scroll journey.
 
 What survives, adapted rather than discarded: obsessive spacing/typography/radius craft, purposeful (not decorative) motion, your reference image's morphing pill navbar (great fit for the patient app), and restrained glass/hover/tilt treatment on the admin dashboard, where the device, connection, and setting can actually support it.
 
@@ -159,7 +159,7 @@ Not a separate screen — a persistent Section 6 banner component present on eve
 | `backdrop-filter: blur(24px)` broadly applied | Prohibitively expensive on budget Android WebViews; fights offline-first performance requirements |
 | Cursor spotlight / proximity glow | Assumes a mouse; app is touch-first on every surface except admin |
 | Magnetic UI (CTAs pulling toward cursor) | Same — no cursor on the surfaces that matter most, and disorienting on the one that has one |
-| Asymmetrical bento grid layout | A landing-page pattern optimized for scroll-discovery; MediServ's screens are single-task tools, not content to browse |
+| Asymmetrical bento grid layout | A landing-page pattern optimized for scroll-discovery; Vyas's screens are single-task tools, not content to browse |
 | Curtain footer reveal | No marketing footer exists in this product — there's nothing at the "end of the page journey" to reveal |
 | Kinetic typography (mask-slide headers) | Field app has near-zero scroll depth per screen; nothing to trigger this on, and it would delay legibility for a nurse mid-task |
 | Sticky deck-of-cards scroll | No feature-list marketing section exists in the product to apply this to |

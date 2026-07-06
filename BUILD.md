@@ -1,4 +1,4 @@
-# BUILD.md — MediServ Implementation Guide
+# BUILD.md — Vyas Implementation Guide
 
 This is the execution layer on top of `ARCHITECTURE.md`, `DESIGN.md`, and `DECISIONS.md`. Every phase below has a self-contained prompt you can paste directly into a coding AI (Claude Code, Cursor, etc.). Run phases **in order** — each one assumes the schema, auth, and folder structure from the phases before it.
 
@@ -11,7 +11,7 @@ Each prompt is written to be dropped in as-is, but attach `DECISIONS.md` and `DE
 ## Phase 0 — Repo & Environment Scaffolding
 
 ```
-Set up a new Next.js 14+ project (App Router, TypeScript, Tailwind CSS) for a project called MediServ, per ADR-001 (modular monolith, no separate backend service).
+Set up a new Next.js 14+ project (App Router, TypeScript, Tailwind CSS) for a project called Vyas, per ADR-001 (modular monolith, no separate backend service).
 
 Folder structure — organize by the five DDD bounded contexts from DESIGN.md Section 5, not generic CRUD folders:
 
@@ -58,7 +58,7 @@ Do not implement any feature logic yet — this phase is scaffolding only. Confi
 ## Phase 1 — Database Schema & Row Level Security (Supabase)
 
 ```
-Using the Supabase project's SQL editor (or a migration file under /supabase/migrations), create the MediServ schema exactly as specified in ARCHITECTURE.md Section 7 and referenced throughout DECISIONS.md.
+Using the Supabase project's SQL editor (or a migration file under /supabase/migrations), create the Vyas schema exactly as specified in ARCHITECTURE.md Section 7 and referenced throughout DECISIONS.md.
 
 Tables (with types, constraints, and foreign keys):
 
@@ -347,7 +347,7 @@ Log and fix any failures before moving to Phase 16.
 ## Phase 16 — Deployment & Demo Prep
 
 ```
-Deploy MediServ to Vercel, per ARCHITECTURE.md's hosting choice.
+Deploy Vyas to Vercel, per ARCHITECTURE.md's hosting choice.
 
 - Configure all env vars (Supabase, OpenRouter, Twilio) in Vercel's project settings, not committed to the repo.
 - Confirm the PWA installs correctly on an Android device (Add to Home Screen) and opens with zero connectivity, per Phase 5's service worker setup.

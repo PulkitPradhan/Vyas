@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-MediServ is a district-scale, offline-first resource and early-warning platform for Primary Health Centres (PHCs) and Community Health Centres (CHCs). It turns stock levels, bed occupancy, doctor attendance, and equipment status — currently tracked on paper and discovered too late — into live, AI-explained signals a district admin can act on before a patient is turned away. The architecture is a deliberately small surface area: a single Next.js PWA, a single Supabase backend, and a thin AI layer that explains numbers rather than inventing them. Every architectural choice in this document answers to one test, restated from the source brief: does this help a nurse, pharmacist, doctor, patient, or district admin do their job today, or is it here because templates usually have it.
+Vyas is a district-scale, offline-first resource and early-warning platform for Primary Health Centres (PHCs) and Community Health Centres (CHCs). It turns stock levels, bed occupancy, doctor attendance, and equipment status — currently tracked on paper and discovered too late — into live, AI-explained signals a district admin can act on before a patient is turned away. The architecture is a deliberately small surface area: a single Next.js PWA, a single Supabase backend, and a thin AI layer that explains numbers rather than inventing them. Every architectural choice in this document answers to one test, restated from the source brief: does this help a nurse, pharmacist, doctor, patient, or district admin do their job today, or is it here because templates usually have it.
 
 **Key architectural principles:**
 - **Offline-first is a hard constraint, not a feature.** The write path never depends on live connectivity.
@@ -41,13 +41,13 @@ ANM/Staff Nurses, Pharmacists/Storekeepers, Doctors/Medical Officers, Patients/C
 
 ## 3. Architectural Style & Core Principles
 
-MediServ is a **modular monolith** (Next.js App Router, API Routes/Server Actions) built against a **managed backend-as-a-service** (Supabase), organized internally along **Domain-Driven Design** module boundaries, with an **offline-first, event-driven synchronization layer** at the edge and a **deterministic-then-generative** AI pipeline.
+Vyas is a **modular monolith** (Next.js App Router, API Routes/Server Actions) built against a **managed backend-as-a-service** (Supabase), organized internally along **Domain-Driven Design** module boundaries, with an **offline-first, event-driven synchronization layer** at the edge and a **deterministic-then-generative** AI pipeline.
 
 This combination fits a district-scale medical resource platform specifically because:
 
 - **A monolith matches the actual load profile.** Hundreds of facilities generating occasional writes is not a scaling problem; it's a *reliability-in-the-field* problem. Spending complexity budget on microservice decomposition would trade away time that needs to go into the offline queue and AI-explanation pipeline instead.
 - **DDD-style internal module boundaries** (Resource Monitoring, Workforce/Attendance, Flagging & Analytics, Redistribution, Patient Access) keep the domain concepts a nurse or district admin would recognize as the organizing structure of the code — not generic CRUD-around-tables — so a future service extraction, if ever warranted, follows real seams rather than needing rediscovery.
-- **Offline-first, event-driven sync at the edge** is the architecture's central adaptation to its actual deployment environment. Most healthcare SaaS architecture patterns assume reliable connectivity; MediServ inverts that assumption because the alternative is staff reverting to the paper register the system is meant to replace.
+- **Offline-first, event-driven sync at the edge** is the architecture's central adaptation to its actual deployment environment. Most healthcare SaaS architecture patterns assume reliable connectivity; Vyas inverts that assumption because the alternative is staff reverting to the paper register the system is meant to replace.
 - **Deterministic-then-generative AI** keeps the parts of the system that determine severity fully auditable and independent of a third-party LLM's availability, while still giving the district admin genuinely readable, bilingual output — which is what makes the dashboard usable in three seconds instead of requiring chart literacy.
 
 ---
@@ -64,8 +64,8 @@ flowchart TB
     Patient["Patient / Citizen<br/>(no-login lookup)"]
     Admin["District Health Admin<br/>(live dashboard)"]
 
-    subgraph MediServ["MediServ Platform"]
-        System["MediServ<br/>Resource & Early-Warning System"]
+    subgraph Vyas["Vyas Platform"]
+        System["Vyas<br/>Resource & Early-Warning System"]
     end
 
     Gemini["Gemini via OpenRouter<br/>(explanations, chat, voice intent)"]
@@ -327,7 +327,7 @@ The AI layer is deliberately structured as a **three-stage pipeline**, and the b
 The Next.js app is stateless per request and scales horizontally on Vercel without code changes. Supabase's connection pooling handles the district-scale write/read volume (hundreds of facilities, thousands of daily writes) comfortably within free/low-tier limits. The domain-module boundaries described in Section 5 give a clear extraction path — most likely the AI module first, since Gemini calls are the highest-latency operation in the system — if a future multi-district rollout produces load the monolith can't comfortably absorb.
 
 ### Security & Compliance
-MediServ's deployment context is Indian district-level PHC/CHC infrastructure, so the operative compliance framework is **India's Digital Personal Data Protection (DPDP) Act, 2023**, IT Rules around reasonable security practices, and alignment with **ABDM's** data-sharing and consent conventions — not HIPAA (a US statute) or GDPR (an EU regulation), neither of which applies by jurisdiction here, though the same underlying principles (data minimization, purpose limitation, access control, auditability) are good practice regardless of which law technically governs.
+Vyas's deployment context is Indian district-level PHC/CHC infrastructure, so the operative compliance framework is **India's Digital Personal Data Protection (DPDP) Act, 2023**, IT Rules around reasonable security practices, and alignment with **ABDM's** data-sharing and consent conventions — not HIPAA (a US statute) or GDPR (an EU regulation), neither of which applies by jurisdiction here, though the same underlying principles (data minimization, purpose limitation, access control, auditability) are good practice regardless of which law technically governs.
 
 The architecture is built to minimize compliance surface rather than manage a large one after the fact:
 - **No patient-identifiable medical record exists in the system at all** (ADR-010) — `footfall_logs` is an anonymous daily counter, and patient lookup requires no login (ADR-008), so there is no personal health data to protect because none is collected.
@@ -350,12 +350,12 @@ Domain-module boundaries (Section 5) keep business logic organized by concept a 
 
 The v1 architecture is deliberately scoped to what a hackathon build and first pilot need, with explicit seams left open for what comes next:
 
-- **ABDM registry integration** — the `facilities.abdm_facility_id` column is already reserved; the next step is consent-based read integration against ABDM's registry, keeping MediServ positioned as a layer on top of, not a competitor to, that infrastructure (Section 13 of the source architecture).
+- **ABDM registry integration** — the `facilities.abdm_facility_id` column is already reserved; the next step is consent-based read integration against ABDM's registry, keeping Vyas positioned as a layer on top of, not a competitor to, that infrastructure (Section 13 of the source architecture).
 - **Production-grade SMS gateway** — moving from a mocked/trial Twilio webhook (ADR-009) to a paid, format-tolerant SMS parsing service before any zero-data-signal district pilot.
 - **Trained forecasting model** — once 3–6 months of real multi-facility `stock_logs` data accumulates, the deterministic rolling-average forecast (ADR-005) can be supplemented by a proper seasonal/trend model, with the LLM's role staying unchanged (explanation only) to preserve auditability.
 - **Citizen accounts and proactive notification** — an opt-in extension of the currently login-free patient experience (ADR-008), for use cases like "notify me when Paracetamol is back in stock at Rampur PHC" — added without making the base lookup require login.
 - **Ambulance/SOS routing** — explicitly roadmap-only in the source scope; would introduce a genuine routing engine, at which point the OSM/Leaflet choice (ADR-011) already provides the base mapping layer to build on.
-- **CHC/district-hospital schema extension** — the flat bed and equipment models (ADR-010) can gain optional, nullable sub-type fields for larger facilities without a breaking migration, when MediServ's scope extends beyond PHC/CHC.
+- **CHC/district-hospital schema extension** — the flat bed and equipment models (ADR-010) can gain optional, nullable sub-type fields for larger facilities without a breaking migration, when Vyas's scope extends beyond PHC/CHC.
 - **Service extraction, if load ever demands it** — the AI module is the most likely first extraction candidate (highest per-call latency, cleanest existing interface boundary per Section 7), moved to a queued background job before any broader monolith-to-services decomposition is considered.
 - **LLM provider hardening** — before any paid, SLA-backed government deployment, revisit the free-tier Gemini/OpenRouter choice (ADR-006) against uptime guarantees and volume pricing.
 

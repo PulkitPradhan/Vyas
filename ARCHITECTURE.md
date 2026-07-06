@@ -1,11 +1,11 @@
-# MediServ — District PHC/CHC Resource & Early-Warning Platform
+# Vyas — District PHC/CHC Resource & Early-Warning Platform
 ### Architecture v2 — Hackathon Build
 
 ---
 
 ## 1. The Problem, Restated in One Line
 
-PHCs/CHCs run on tribal knowledge and phone calls. Stock-outs, empty beds nobody knows about, doctors who don't show up, and broken test machines all get discovered *after* a patient is turned away — never before. MediServ's only job is to surface these problems early enough for someone to act, in a form that works on a bad phone with a worse signal.
+PHCs/CHCs run on tribal knowledge and phone calls. Stock-outs, empty beds nobody knows about, doctors who don't show up, and broken test machines all get discovered *after* a patient is turned away — never before. Vyas's only job is to surface these problems early enough for someone to act, in a form that works on a bad phone with a worse signal.
 
 Everything below is filtered through one test: **does this help a nurse, a pharmacist, a doctor, a patient, or a district admin do their actual job today — or is it there because hospital SaaS templates usually have it?**
 
@@ -24,7 +24,7 @@ Everything below is filtered through one test: **does this help a nurse, a pharm
 
 ## 3. Personas & What They Actually Need
 
-| Persona | Real pain today | What MediServ gives them |
+| Persona | Real pain today | What Vyas gives them |
 |---|---|---|
 | **ANM / Staff Nurse** | Manually tracks footfall and beds on paper registers | One-tap patient-in counter, one-tap bed occupied/free toggle |
 | **Pharmacist / Storekeeper** | No visibility into stock trend; discovers stock-out when a patient asks | Voice/typed stock update, sees own centre's stock-out risk instantly |
@@ -185,12 +185,12 @@ A staff member texts a fixed-format code (`STOCK PCM 0 RAMPUR`) to a Twilio numb
 
 ## 13. Positioning Against What Already Exists (Judges Will Ask This)
 
-| Existing system | Gap MediServ fills |
+| Existing system | Gap Vyas fills |
 |---|---|
 | HMIS | Not real-time, not AI-driven, heavy reporting-only tool |
 | eSanjeevani | Teleconsultation-focused, not resource/stock/attendance monitoring |
 | IHIP | Disease surveillance, not day-to-day operational resource tracking |
-| ABDM | Federated health ID/registry layer — MediServ can *sit on top of* ABDM's facility registry rather than compete with it |
+| ABDM | Federated health ID/registry layer — Vyas can *sit on top of* ABDM's facility registry rather than compete with it |
 
 Have one pitch slide making this comparison explicit — it preempts the "why not just use what exists" question before a judge asks it.
 

@@ -16,11 +16,11 @@ export interface QueuedRow {
   synced: boolean;
 }
 
-class MediServDB extends Dexie {
+class VyasDB extends Dexie {
   writeQueue!: Table<QueuedRow, number>;
 
   constructor() {
-    super("mediserv");
+    super("vyas");
     this.version(1).stores({
       writeQueue: "++id, domain, action, synced, createdAt",
     });
@@ -29,8 +29,8 @@ class MediServDB extends Dexie {
 
 // Singleton DB handle. Constructed lazily so SSR / build (no `indexedDB`)
 // never instantiates it.
-let dbInstance: MediServDB | null = null;
-export function getDB(): MediServDB {
-  if (!dbInstance) dbInstance = new MediServDB();
+let dbInstance: VyasDB | null = null;
+export function getDB(): VyasDB {
+  if (!dbInstance) dbInstance = new VyasDB();
   return dbInstance;
 }

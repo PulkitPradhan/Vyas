@@ -26,7 +26,7 @@ export async function POST() {
     .single();
 
   if (!staff) {
-    // Auth succeeded but no staff row => not registered for MediServ.
+    // Auth succeeded but no staff row => not registered for Vyas.
     return NextResponse.json({ ok: false, reason: "not_registered" });
   }
 

@@ -28,7 +28,7 @@ const SyncContext = createContext<SyncContextValue | null>(null);
 
 export function SyncProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<SyncState>({
-    online: typeof navigator !== "undefined" ? navigator.onLine : true,
+    online: true, // Always true on first render to match server (hydration)
     queueLength: 0,
     flushing: false,
   });
@@ -153,6 +153,11 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   // is read inside an async IIFE so its setState lands after an await, not
   // synchronously in the effect body (react-hooks/set-state-in-effect).
   useEffect(() => {
+    // Reconcile initial hydration state (which is always true) with actual network state
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setState((s) => ({ ...s, online: false }));
+    }
+
     void (async () => {
       await refreshQueueLength();
     })();
