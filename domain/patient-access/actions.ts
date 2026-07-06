@@ -6,6 +6,8 @@ import { processMessagePipeline } from "@/lib/ats/pipeline";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { headers } from "next/headers";
 
+export const maxDuration = 60;
+
 // Patient chatbot responder — invoked from the public page. No auth. The
 // patient's anonymous session token is generated client-side and logged here
 // against chat_logs.patient_session (no identity).
