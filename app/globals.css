@@ -70,9 +70,9 @@
 ───────────────────────────────────────────────── */
 html.theme-dark {
   /* Override light backgrounds before inversion so they become gray instead of OLED black */
-  --ms-bg: #E0E4E8;
-  --ms-surface: #E8ECEF;
-  --ms-surface-2: #D1D5DB;
+  --ms-bg: #E5E5E5;
+  --ms-surface: #DBDBDB;
+  --ms-surface-2: #D1D1D1;
   
   filter: invert(1) hue-rotate(180deg);
 }

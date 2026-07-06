@@ -2,8 +2,16 @@
 
 import { useRef, useState } from "react";
 import { useSync } from "@/lib/offline/sync-provider";
-import { parseIntent, type ParsedIntent } from "@/lib/ai/gemini";
+import { processVoiceTranscript } from "@/domain/staff/actions";
 import type { StockItemRow } from "@/domain/resource-monitoring/queries";
+
+interface ParsedIntent {
+  action: "deplete" | "restock" | "lookup" | "unknown" | "deplete_or_restock";
+  item: string;
+  quantity: number;
+  facility?: string;
+  confidence: "high" | "low";
+}
 
 interface Props {
   facilityId: string;
@@ -101,13 +109,18 @@ export default function VoiceInput({ facilityId, language, items, onApplied }: P
         return;
       }
       setPhase("processing");
-      const intent = await parseIntent(finalTranscript);
+      const { intent, responseText } = await processVoiceTranscript(finalTranscript, "voice_" + facilityId);
+      if (responseText) {
+        setPhase("error");
+        setError(responseText);
+        return;
+      }
       if (!intent) {
         setPhase("error");
         setError("Couldn't understand that update. Try a typed one.");
         return;
       }
-      if (intent.confidence !== "high" || intent.action === "unknown") {
+      if (intent.confidence === "low" || intent.action === "unknown" || intent.action === "deplete_or_restock") {
         // Low-confidence: NEVER silently write — surface the parsed guess.
         setParsedForConfirm(intent);
         setPhase("confirm");
