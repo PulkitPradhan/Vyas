@@ -14,6 +14,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
     // 1. Check local storage
     const stored = localStorage.getItem("ms-theme");
     if (stored === "dark") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDark(true);
       document.documentElement.classList.add("theme-dark");
     } else if (stored === "light") {

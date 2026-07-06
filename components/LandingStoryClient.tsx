@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, MouseEvent } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import SignOutButton from "@/components/SignOutButton";
 
 interface Props {
   staff: { name: string; role: string } | null;
@@ -28,6 +29,7 @@ export default function LandingStoryClient({ staff }: Props) {
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -253,9 +255,9 @@ export default function LandingStoryClient({ staff }: Props) {
             {staff && (
               <p className="hero-animate hero-d4 mt-6 text-sm text-ms-textSecondary">
                 {t.signed_in_as} <strong className="text-ms-textPrimary">{staff.name}</strong> ({staff.role}) ·{" "}
-                <a href="/sign-out" className="text-brand underline underline-offset-2 hover:text-brand-hover">
+                <SignOutButton className="text-brand underline underline-offset-2 hover:text-brand-hover">
                   {t.sign_out}
-                </a>
+                </SignOutButton>
               </p>
             )}
           </div>

@@ -12,13 +12,14 @@ const anon = () => process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 // and route handlers. Reads + writes the auth session via Next cookies.
 // Lazy + non-throwing on missing env so build-time prerender of protected
 // layouts doesn't crash; an actual auth/db call will surface the error.
-let cachedServer: SupabaseClient | null = null;
-
+//
+// IMPORTANT: a fresh client is built on every call. `cookies()` is per-request,
+// and in a serverless/warm-container environment a module-level cache would
+// bleak the first request's cookie store (and therefore its auth session) into
+// every subsequent request. `cookies()` is cheap, so there is nothing to cache.
 export async function createServerClient(): Promise<SupabaseClient> {
-  if (cachedServer) return cachedServer;
-
   const cookieStore = await cookies();
-  cachedServer = createSSRClient(url(), anon(), {
+  return createSSRClient(url(), anon(), {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -35,12 +36,6 @@ export async function createServerClient(): Promise<SupabaseClient> {
       },
     },
   });
-  return cachedServer;
-}
-
-// Reset the cached server client between tests / when env changes.
-export function __resetServerClient(): void {
-  cachedServer = null;
 }
 
 // Middleware variant: build a server client from the middleware's request

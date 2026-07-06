@@ -103,9 +103,12 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
     async (domain, action, payload, onResult) => {
       // 1. Enqueue in IndexedDB first — durable even if the immediate sync below
       //    fails. This is the heart of ADR-003's offline-first guarantee.
+      let newRowId: number;
       try {
         const db = getDB();
-        await db.writeQueue.add({
+        // add() returns the autoincrement key of the row it just inserted, so
+        // we can delete exactly that row on success — no need to scan the queue.
+        newRowId = await db.writeQueue.add({
           domain,
           action,
           payload,
@@ -127,22 +130,16 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
       //    update can be reconciled). Offline => the queued row waits for the
       //    flusher.
       if (typeof navigator !== "undefined" && navigator.onLine) {
-        // Find the row just added and flush from it. Simpler: trigger a normal
-        // flush, which processes in order and calls onResult via the wrapper.
         const db = getDB();
-        const rows = await db.writeQueue.orderBy("createdAt").reverse().toArray();
-        const lastRow = rows.find((r) => r.action === action && !r.synced);
-        if (lastRow) {
-          try {
-            const res = await replayAction(action, payload);
-            if (res.ok) {
-              await db.writeQueue.delete(lastRow.id!);
-              refreshQueueLength();
-            }
-            onResult?.(res);
-          } catch (err) {
-            flushStateFromError(err);
+        try {
+          const res = await replayAction(action, payload);
+          if (res.ok) {
+            await db.writeQueue.delete(newRowId);
+            refreshQueueLength();
           }
+          onResult?.(res);
+        } catch (err) {
+          flushStateFromError(err);
         }
       }
     },
@@ -155,6 +152,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Reconcile initial hydration state (which is always true) with actual network state
     if (typeof navigator !== "undefined" && !navigator.onLine) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState((s) => ({ ...s, online: false }));
     }
 

@@ -4,9 +4,10 @@
 
 /* ─────────────────────────────────────────────────
    Fonts — Inter + Noto Sans Devanagari (Hindi)
-   Loaded via preconnect; no render-blocking FOUT
+   Self-hosted via next/font (see app/layout.tsx). Exposed as the CSS
+   variables --font-inter and --font-devanagari; referenced below. No
+   render-blocking @import.
 ───────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 /* ─────────────────────────────────────────────────
    Vyas Design Tokens (Light default)
@@ -100,13 +101,24 @@ html.theme-dark [data-no-invert] {
   box-sizing: border-box;
 }
 
+/* ─────────────────────────────────────────────────
+   Offline / sync banner offset. The banner is a fixed strip at top:0. When it
+   is visible, SyncBanner adds `.ms-has-banner` to <html>; these rules reserve
+   its height so page content and sticky headers (top:0) sit BELOW it instead
+   of being covered. Removing the class restores the default with no layout jump
+   because the banner only shows in the offline / just-synced states.
+───────────────────────────────────────────────── */
+:root { --ms-banner-h: 2.5rem; }
+html.ms-has-banner body { padding-top: var(--ms-banner-h); }
+html.ms-has-banner header.sticky { top: var(--ms-banner-h); }
+
 html {
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--ms-bg);
   color: var(--ms-text-primary);
   min-height: 100vh;
@@ -119,7 +131,7 @@ body {
 
 /* Hindi text — switch to Noto Sans Devanagari */
 :lang(hi), [lang="hi"], .lang-hi {
-  font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+  font-family: var(--font-devanagari), var(--font-inter), sans-serif;
 }
 
 /* ─────────────────────────────────────────────────
@@ -173,7 +185,7 @@ body {
   height: 100%;
   width: 100%;
   border-radius: var(--ms-radius-md);
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-inter), sans-serif !important;
 }
 
 /* ─────────────────────────────────────────────────

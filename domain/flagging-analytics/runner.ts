@@ -236,24 +236,28 @@ export async function evaluateDoctorFlag(
 export async function sweepDoctorAbsence(cutoffHour = 11): Promise<number> {
   const supabase = createServiceClient();
   const { data: facilities } = await supabase.from("facilities").select("id");
+  if (!facilities || facilities.length === 0) return 0;
 
-  let raised = 0;
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
   const cutoffToday = new Date();
   cutoffToday.setHours(cutoffHour, 0, 0, 0);
 
-  for (const f of facilities ?? []) {
-    const { count } = await supabase
-      .from("doctor_attendance")
-      // approximate count API: Supabase supports { count: "exact", head: true }
-      .select("id", { count: "exact", head: true })
-      .eq("facility_id", f.id)
-      .gte("check_in", startOfToday.toISOString())
-      .lte("check_in", cutoffToday.toISOString());
+  // Single query for all of today's pre-cutoff check-ins across the district,
+  // then compare in memory — avoids the previous N+1 (one query per facility).
+  const { data: attendance } = await supabase
+    .from("doctor_attendance")
+    .select("facility_id")
+    .gte("check_in", startOfToday.toISOString())
+    .lte("check_in", cutoffToday.toISOString());
 
-    const checkedInByCutoff = (count ?? 0) > 0;
-    if (!checkedInByCutoff) {
+  const checkedInFacilityIds = new Set(
+    (attendance ?? []).map((a) => a.facility_id as string)
+  );
+
+  let raised = 0;
+  for (const f of facilities) {
+    if (!checkedInFacilityIds.has(f.id as string)) {
       await evaluateDoctorFlag(f.id, false);
       raised += 1;
     }

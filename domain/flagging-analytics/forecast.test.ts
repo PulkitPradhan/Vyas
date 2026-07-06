@@ -79,9 +79,14 @@ describe("severityForStock", () => {
     expect(severityForStock(4)).toBe("warning");
     expect(severityForStock(7)).toBe("warning");
   });
-  it("flags watch when daysToZero > 7 but trending down", () => {
+  it("flags watch when 7 < daysToZero <= 21 (trending down within horizon)", () => {
     expect(severityForStock(10)).toBe("watch");
-    expect(severityForStock(100)).toBe("watch");
+    expect(severityForStock(21)).toBe("watch");
+  });
+  it("does not flag when the runway is healthy (daysToZero > 21)", () => {
+    expect(severityForStock(22)).toBeNull();
+    expect(severityForStock(100)).toBeNull();
+    expect(severityForStock(365)).toBeNull();
   });
   it("does not flag when there is no consumption signal", () => {
     expect(severityForStock(null)).toBeNull();

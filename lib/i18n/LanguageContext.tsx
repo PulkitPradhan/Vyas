@@ -12,24 +12,24 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  // Server and first client render always use "en" (matching state below), so
+  // there is no hydration mismatch. The saved/detected language is applied in
+  // the effect after mount — a normal client update, no need to hide the app.
   const [language, setLanguageState] = useState<Language>("en");
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // 1. Check local storage first
     const saved = localStorage.getItem("vyas-language") as Language;
     if (saved && (saved === "en" || saved === "hi")) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLanguageState(saved);
-    } else {
+    } else if (typeof navigator !== "undefined") {
       // 2. Auto-detect from browser
-      if (typeof navigator !== "undefined") {
-        const browserLang = navigator.language.toLowerCase();
-        if (browserLang.startsWith("hi")) {
-          setLanguageState("hi");
-        }
+      const browserLang = navigator.language.toLowerCase();
+      if (browserLang.startsWith("hi")) {
+        setLanguageState("hi");
       }
     }
-    setMounted(true);
   }, []);
 
   const setLanguage = (lang: Language) => {
@@ -41,11 +41,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
-      {!mounted ? (
-        <div style={{ visibility: "hidden" }}>{children}</div>
-      ) : (
-        children
-      )}
+      {children}
     </LanguageContext.Provider>
   );
 }

@@ -182,6 +182,12 @@ export async function runAgent(input: AgentInput): Promise<string> {
     : "Sorry, it's taking me too long to find the answer.";
 }
 
+// Escape LIKE/ILIKE wildcards in user- (LLM-) supplied input so a value like
+// "%" can't match every row. `\` is the default PostgREST escape char.
+function escapeLike(s: unknown): string {
+  return String(s ?? "").replace(/([\\%_])/g, "\\$1");
+}
+
 async function executeTool(name: string, argsString: string, lang: "en" | "hi"): Promise<string> {
   const supabase = createServiceClient();
   let args: any;
@@ -193,15 +199,15 @@ async function executeTool(name: string, argsString: string, lang: "en" | "hi"):
 
   switch (name) {
     case "search_stock": {
-      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${args.facilityName}%`).maybeSingle();
+      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${escapeLike(args.facilityName)}%`).maybeSingle();
       if (!f) return `Facility ${args.facilityName} not found.`;
-      const { data: stock } = await supabase.from("stock_items").select("quantity, unit").eq("facility_id", f.id).ilike("item_name", `%${args.itemName}%`).maybeSingle();
+      const { data: stock } = await supabase.from("stock_items").select("quantity, unit").eq("facility_id", f.id).ilike("item_name", `%${escapeLike(args.itemName)}%`).maybeSingle();
       if (!stock) return `Item ${args.itemName} not found at ${args.facilityName}.`;
       return `${args.itemName} has ${stock.quantity} ${stock.unit}.`;
     }
 
     case "check_bed_availability": {
-      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${args.facilityName}%`).maybeSingle();
+      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${escapeLike(args.facilityName)}%`).maybeSingle();
       if (!f) return `Facility ${args.facilityName} not found.`;
       const { data: beds } = await supabase.from("bed_status").select("total, occupied").eq("facility_id", f.id).maybeSingle();
       if (!beds) return "No bed data.";
@@ -209,15 +215,15 @@ async function executeTool(name: string, argsString: string, lang: "en" | "hi"):
     }
 
     case "check_test_availability": {
-      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${args.facilityName}%`).maybeSingle();
+      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${escapeLike(args.facilityName)}%`).maybeSingle();
       if (!f) return `Facility not found.`;
-      const { data: test } = await supabase.from("test_availability").select("is_functional").eq("facility_id", f.id).ilike("test_name", `%${args.testName}%`).maybeSingle();
+      const { data: test } = await supabase.from("test_availability").select("is_functional").eq("facility_id", f.id).ilike("test_name", `%${escapeLike(args.testName)}%`).maybeSingle();
       if (!test) return "Test not found.";
       return `Test is ${test.is_functional ? "functional" : "not functional"}.`;
     }
 
     case "get_doctor_status": {
-      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${args.facilityName}%`).maybeSingle();
+      const { data: f } = await supabase.from("facilities").select("id").ilike("name", `%${escapeLike(args.facilityName)}%`).maybeSingle();
       if (!f) return `Facility not found.`;
       
       const today = new Date().toISOString().split("T")[0];

@@ -319,30 +319,14 @@ export async function incrementFootfall(
   const date = payload.date ?? new Date().toISOString().slice(0, 10);
   const supabase = await createServerClient();
 
-  // Upsert by (facility_id, date), incrementing count. Unique index
-  // footfall_facility_date_uq covers the conflict target.
-  const { data: existing } = await supabase
-    .from("footfall_logs")
-    .select("id, count")
-    .eq("facility_id", payload.facilityId)
-    .eq("date", date)
-    .single();
-
-  if (existing) {
-    const newCount = (existing.count as number) + 1;
-    const { error } = await supabase
-      .from("footfall_logs")
-      .update({ count: newCount })
-      .eq("id", existing.id);
-    if (error) return fail(error.message);
-    return ok({ facilityId: payload.facilityId, date, count: newCount });
-  }
-
-  const { error } = await supabase.from("footfall_logs").insert({
-    facility_id: payload.facilityId,
-    date,
-    count: 1,
+  // Atomic increment in a single statement (INSERT ... ON CONFLICT DO UPDATE
+  // SET count = count + 1 RETURNING count) via the increment_footfall RPC. The
+  // previous read-then-write lost increments under concurrency: two callers
+  // could both read N and both write N+1.
+  const { data, error } = await supabase.rpc("increment_footfall", {
+    p_facility_id: payload.facilityId,
+    p_date: date,
   });
   if (error) return fail(error.message);
-  return ok({ facilityId: payload.facilityId, date, count: 1 });
+  return ok({ facilityId: payload.facilityId, date, count: data as number });
 }

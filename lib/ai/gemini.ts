@@ -1,6 +1,9 @@
-"use server";
+// NOTE: intentionally NOT a "use server" module. These are internal server-side
+// helpers (called from the flagging runner and the AI agent), not form/button
+// Server Actions. Marking the file "use server" would expose complete() and
+// generateFlagExplanation() as client-callable endpoints — an open proxy for
+// arbitrary LLM calls through our key. Keep them as ordinary server imports.
 
-import { z } from "zod";
 import { createServiceClient } from "@/lib/supabase/server";
 
 // ===========================================================================

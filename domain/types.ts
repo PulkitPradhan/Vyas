@@ -23,16 +23,9 @@ export interface ActionResult {
   state?: Record<string, unknown>;
 }
 
-// Canonical envelope stored in the IndexedDB queue and passed to the replay
-// router. The same shape is used for a live call (processed immediately) and
-// a queued call (flushed on reconnect) — that equivalence is the whole point.
-export interface QueuedAction {
-  id?: number;              // Dexie autoincrement, present once queued
-  actionKey: ActionKey;
-  payload: Record<string, unknown>;
-  createdAt: number;
-  synced: boolean;
-}
+// The IndexedDB queue row shape lives in lib/offline/db.ts (QueuedRow) — it is
+// the single canonical envelope stored and replayed. (An earlier duplicate
+// `QueuedAction` interface here was unused and has been removed.)
 
 // Resource-monitoring action keys — consumed by the offline replay router and
 // by anything enumerating the staff-data-entry actions. Lives here (not in a

@@ -1,6 +1,16 @@
 import { createServerClient } from "@/lib/supabase/server";
-import { getCurrentStaff } from "@/lib/auth/context";
+import { getCurrentStaff, type StaffContext } from "@/lib/auth/context";
 import type { FlagSeverityLike, FlagCategory } from "@/lib/types";
+
+// Each query can accept an already-resolved staff context so a page that loads
+// several of them (e.g. the admin dashboard) resolves auth ONCE and passes it
+// down, instead of every query re-running getCurrentStaff (4× auth.getUser +
+// 4× staff read for a single page). Falls back to resolving it when omitted.
+async function resolveStaff(
+  staff?: StaffContext | null
+): Promise<StaffContext | null> {
+  return staff !== undefined ? staff : await getCurrentStaff();
+}
 
 export interface FlagRow {
   id: string;
@@ -40,8 +50,8 @@ export interface SuggestionRow {
 // from Phase 1 join facilities.district). Never take a district param from the
 // client.
 
-export async function getDistrictFlags(): Promise<FlagRow[]> {
-  const staff = await getCurrentStaff();
+export async function getDistrictFlags(staffCtx?: StaffContext | null): Promise<FlagRow[]> {
+  const staff = await resolveStaff(staffCtx);
   if (!staff) return [];
   const supabase = await createServerClient();
   const { data, error } = await supabase
@@ -75,8 +85,8 @@ export async function getDistrictFlags(): Promise<FlagRow[]> {
   }));
 }
 
-export async function getDistrictFacilities(): Promise<FacilityMarker[]> {
-  const staff = await getCurrentStaff();
+export async function getDistrictFacilities(staffCtx?: StaffContext | null): Promise<FacilityMarker[]> {
+  const staff = await resolveStaff(staffCtx);
   if (!staff || staff.role !== "admin") return [];
   const supabase = await createServerClient();
 
@@ -103,8 +113,8 @@ export async function getDistrictFacilities(): Promise<FacilityMarker[]> {
   }));
 }
 
-export async function getDistrictSuggestions(): Promise<SuggestionRow[]> {
-  const staff = await getCurrentStaff();
+export async function getDistrictSuggestions(staffCtx?: StaffContext | null): Promise<SuggestionRow[]> {
+  const staff = await resolveStaff(staffCtx);
   if (!staff || staff.role !== "admin") return [];
   const supabase = await createServerClient();
 

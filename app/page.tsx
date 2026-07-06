@@ -3,6 +3,7 @@ import { getCurrentStaff } from "@/lib/auth/context";
 import ThemeToggle from "@/components/ThemeToggle";
 import LangToggle from "@/components/LangToggle";
 import LandingStoryClient from "@/components/LandingStoryClient";
+import SignOutButton from "@/components/SignOutButton";
 
 // Force dynamic — auth lookup is server-side
 export const dynamic = "force-dynamic";
@@ -38,12 +39,7 @@ export default async function RootPage() {
             <LangToggle />
             <ThemeToggle />
             {staff ? (
-              <a
-                href="/sign-out"
-                className="rounded-ms-sm border border-ms-border px-3 py-2 text-sm font-medium text-ms-textSecondary transition-colors hover:border-brand hover:text-brand"
-              >
-                Sign out
-              </a>
+              <SignOutButton className="rounded-ms-sm border border-ms-border px-3 py-2 text-sm font-medium text-ms-textSecondary transition-colors hover:border-brand hover:text-brand" />
             ) : (
               <Link
                 href="/login"

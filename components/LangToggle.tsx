@@ -7,8 +7,16 @@ export default function LangToggle() {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex items-center gap-1 rounded-full bg-ms-border/50 p-1 text-xs font-medium">
+    <div
+      role="radiogroup"
+      aria-label="Language"
+      className="flex items-center gap-1 rounded-full bg-ms-border/50 p-1 text-xs font-medium"
+    >
       <button
+        type="button"
+        role="radio"
+        aria-checked={language === "en"}
+        aria-label="English"
         onClick={() => setLanguage("en")}
         className={`rounded-full px-2.5 py-1 transition-colors ${
           language === "en"
@@ -19,6 +27,10 @@ export default function LangToggle() {
         EN
       </button>
       <button
+        type="button"
+        role="radio"
+        aria-checked={language === "hi"}
+        aria-label="हिन्दी"
         onClick={() => setLanguage("hi")}
         className={`rounded-full px-2.5 py-1 transition-colors ${
           language === "hi"

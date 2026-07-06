@@ -14,6 +14,7 @@ export default function SyncBanner() {
   useEffect(() => {
     if (prevOnline === false && online) {
       // Just came back online — flash the synced banner
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowSynced(true);
       const t = setTimeout(() => setShowSynced(false), 2500);
       return () => clearTimeout(t);
@@ -21,8 +22,18 @@ export default function SyncBanner() {
     setPrevOnline(online);
   }, [online, prevOnline]);
 
+  const visible = !online || showSynced;
+
+  // Reserve the fixed banner's height (via a class on <html>) whenever it's
+  // shown, so it doesn't overlap the sticky page headers (see globals.css).
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("ms-has-banner", visible);
+    return () => root.classList.remove("ms-has-banner");
+  }, [visible]);
+
   // Fully hidden when online and not in "just-synced" flash state
-  if (online && !showSynced) return null;
+  if (!visible) return null;
 
   return (
     <div

@@ -33,10 +33,11 @@ export async function suggestRedistribution(
 ): Promise<number> {
   const supabase = createServiceClient();
 
-  // 1. Load the deficit facility (need its coords).
+  // 1. Load the deficit facility (need its coords AND its district — the donor
+  //    query below scopes candidates to the same district).
   const { data: deficitRow } = await supabase
     .from("facilities")
-    .select("id, name, lat, lng")
+    .select("id, name, lat, lng, district")
     .eq("id", deficitFacilityId)
     .single();
   if (!deficitRow) return 0;

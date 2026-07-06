@@ -14,7 +14,7 @@ const getClient = () => {
   return supabaseSingleton;
 };
 
-type Step = "choose" | "phone" | "email" | "otp" | "verifying" | "not_registered" | "error";
+type Step = "choose" | "phone" | "email" | "otp" | "verifying" | "not_registered";
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -25,28 +25,39 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  // Whether `message` represents an error (vs. an informational note like
+  // "code sent"). The error banner keys off this so an email-flow error never
+  // renders under the phone form (they no longer share a generic "error" step).
+  const [errored, setErrored] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const normalizePhone = (raw: string) => {
-    const digits = raw.replace(/\D/g, "");
-    return digits.startsWith("91") || digits.length === 10
-      ? `+91${digits.replace(/^91/, "")}`
-      : `+${digits}`;
+    const trimmed = raw.trim();
+    // Respect an explicit international number the user already typed.
+    if (trimmed.startsWith("+")) return `+${trimmed.replace(/\D/g, "")}`;
+    const digits = trimmed.replace(/\D/g, "");
+    // Bare 10-digit input => Indian mobile (the login form is India-scoped).
+    if (digits.length === 10) return `+91${digits}`;
+    // 12 digits starting with the Indian country code.
+    if (digits.length === 12 && digits.startsWith("91")) return `+${digits}`;
+    // Otherwise assume the user included their own country code.
+    return `+${digits}`;
   };
 
   async function signInWithEmail(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setMessage(null);
+    setErrored(false);
     const { error } = await getClient().auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
       setBusy(false);
-      setStep("error");
+      setErrored(true);
       setMessage(error.message);
-      return;
+      return; // stay on the email form
     }
     const res = await fetch("/api/login-resolve", { method: "POST" });
     const data = await res.json();
@@ -60,16 +71,18 @@ export default function LoginPage() {
       setStep("not_registered");
       return;
     }
-    setStep("error");
+    setErrored(true);
     setMessage(t.resolve_error);
   }
 
   async function sendOtp(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
+    setErrored(false);
     const fullPhone = normalizePhone(phone);
     if (fullPhone.replace(/\D/g, "").length < 12) {
-      setStep("error");
+      setStep("phone");
+      setErrored(true);
       setMessage(t.invalid_phone);
       return;
     }
@@ -78,7 +91,8 @@ export default function LoginPage() {
     const { error } = await getClient().auth.signInWithOtp({ phone: fullPhone });
     setBusy(false);
     if (error) {
-      setStep("error");
+      setStep("phone");
+      setErrored(true);
       setMessage(error.message);
       return;
     }
@@ -89,6 +103,7 @@ export default function LoginPage() {
   async function verifyOtp(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
+    setErrored(false);
     setBusy(true);
     setStep("verifying");
     const { error } = await getClient().auth.verifyOtp({
@@ -99,6 +114,7 @@ export default function LoginPage() {
     if (error) {
       setBusy(false);
       setStep("otp");
+      setErrored(true);
       setMessage(error.message);
       return;
     }
@@ -116,7 +132,8 @@ export default function LoginPage() {
       setStep("not_registered");
       return;
     }
-    setStep("error");
+    setStep("otp");
+    setErrored(true);
     setMessage(t.resolve_error);
   }
 
@@ -146,7 +163,7 @@ export default function LoginPage() {
         </div>
 
         <div className="rounded-ms-md border border-ms-border bg-ms-surface p-6 shadow-card-lg">
-          {step === "error" && message && (
+          {errored && message && (
             <div className="mb-4 flex items-start gap-2 rounded-ms-sm border border-[#EDB3B3] bg-critical-tint px-4 py-3 text-sm text-critical ms-xfade">
               <svg viewBox="0 0 16 16" fill="currentColor" className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true">
                 <path fillRule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm7.25-3.25a.75.75 0 011.5 0v3.5a.75.75 0 01-1.5 0v-3.5zm.75 6a.75.75 0 100 1.5.75.75 0 000-1.5z" clipRule="evenodd"/>
@@ -245,7 +262,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setStep("choose")}
+                onClick={() => { setStep("choose"); setErrored(false); setMessage(null); }}
                 className="w-full text-sm text-ms-textSecondary hover:text-ms-textPrimary"
               >
                 ← {t.back}
@@ -253,7 +270,7 @@ export default function LoginPage() {
             </form>
           )}
 
-          {(step === "phone" || step === "error") && (
+          {step === "phone" && (
             <form onSubmit={sendOtp} className="space-y-4">
               <div>
                 <label htmlFor="phone-input" className="mb-1.5 block text-sm font-medium text-ms-textPrimary">
@@ -284,7 +301,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setStep("choose")}
+                onClick={() => { setStep("choose"); setErrored(false); setMessage(null); }}
                 className="w-full text-sm text-ms-textSecondary hover:text-ms-textPrimary"
               >
                 ← {t.back}
@@ -328,7 +345,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                onClick={() => { setStep("phone"); setOtp(""); setMessage(null); }}
+                onClick={() => { setStep("phone"); setOtp(""); setMessage(null); setErrored(false); }}
                 className="w-full text-sm text-ms-textSecondary hover:text-ms-textPrimary"
               >
                 {t.use_different_number}
@@ -349,7 +366,7 @@ export default function LoginPage() {
               </p>
               <button
                 type="button"
-                onClick={() => { setStep("choose"); setOtp(""); setMessage(null); }}
+                onClick={() => { setStep("choose"); setOtp(""); setMessage(null); setErrored(false); }}
                 className="w-full rounded-ms-sm border border-ms-border px-4 py-3 text-sm font-medium hover:bg-ms-bg"
               >
                 {t.try_different_method}

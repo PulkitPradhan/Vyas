@@ -10,8 +10,8 @@ const GREETINGS = ["hi", "hello", "namaste", "hii", "hey", "hola"];
 const CLOSINGS = ["thanks", "thank you", "dhanyavad", "bye", "goodbye"];
 
 const GREETING_RESPONSE = {
-  en: "Hello! I am the MediServ assistant. How can I help you today? You can ask about medicines, beds, or tests.",
-  hi: "नमस्ते! मैं MediServ सहायक हूँ। मैं आपकी कैसे मदद कर सकता हूँ? आप दवाओं, बिस्तरों, या टेस्ट के बारे में पूछ सकते हैं।"
+  en: "Hello! I am the Vyas assistant. How can I help you today? You can ask about medicines, beds, or tests.",
+  hi: "नमस्ते! मैं Vyas सहायक हूँ। मैं आपकी कैसे मदद कर सकता हूँ? आप दवाओं, बिस्तरों, या टेस्ट के बारे में पूछ सकते हैं।"
 };
 
 const CLOSING_RESPONSE = {
@@ -94,7 +94,7 @@ async function checkAvailabilityDeterministic(itemName: string, facilityName: st
   const supabase = createServiceClient();
   
   // 1. Fetch facilities
-  const { data: facilities } = await supabase.select("id, name").from("facilities");
+  const { data: facilities } = await supabase.from("facilities").select("id, name");
   if (!facilities) return null;
 
   let targetFacilityId = null;
@@ -166,35 +166,41 @@ async function handleStructuredStockUpdate(itemName: string, qty: number, facili
     facilityId = matched[0].id;
   }
 
-  // Find item
-  let query = supabase.from("stock_items").select("id, item_name");
+  // Find item. Read the current quantity too so we can record the true delta
+  // (the change), not the new absolute quantity — stock_logs.delta drives the
+  // consumption/restock forecast, so an absolute value here would corrupt it.
+  let query = supabase.from("stock_items").select("id, item_name, quantity");
   if (facilityId) query = query.eq("facility_id", facilityId);
-  
+
   const { data: items } = await query;
   if (!items) return null;
 
   const matchedItem = fuzzyMatch(itemName, items, "item_name");
   if (matchedItem.length !== 1) return null; // Ambiguous
 
-  // We have exactly one item. Since we are server-side, we bypass the queue and write directly to stock_items 
-  // (or we could use the queue, but for simplicity of the ATS standalone capability we'll just write it if we know the ID).
-  // Actually, standard system design says use the queue: 
-  // But ATS router is synchronous. Let's just update stock_items and insert a log.
-  
-  const targetId = matchedItem[0].id;
-  
-  const { error: updateErr } = await supabase.from("stock_items").update({ quantity: qty, updated_at: new Date().toISOString() }).eq("id", targetId);
+  // We have exactly one item. ATS runs server-side and synchronously, so it
+  // writes the new absolute quantity directly and appends the signed delta.
+  const target = matchedItem[0] as { id: string; item_name: string; quantity: number };
+  const targetId = target.id;
+  const delta = qty - (target.quantity ?? 0);
+
+  const { error: updateErr } = await supabase
+    .from("stock_items")
+    .update({ quantity: qty, updated_at: new Date().toISOString() })
+    .eq("id", targetId);
   if (updateErr) return null;
 
-  await supabase.from("stock_logs").insert({
-    stock_item_id: targetId,
-    delta: qty, // Note: Phase 1 delta is raw quantity? Actually, delta in stock_logs is +/-, but we don't know the old qty. 
-                // Let's just record 0 delta to be safe, or fetch old qty. 
-                // For this demo, just updating stock_items is sufficient for the ATS success path.
-    source: "sms"
-  });
+  // Only append an audit row when the quantity actually changed. delta is the
+  // signed change (negative = consumption, positive = restock).
+  if (delta !== 0) {
+    await supabase.from("stock_logs").insert({
+      stock_item_id: targetId,
+      delta,
+      source: "sms",
+    });
+  }
 
-  return { response: `✅ Stock updated: ${matchedItem[0].item_name} is now ${qty}.` };
+  return { response: `✅ Stock updated: ${target.item_name} is now ${qty}.` };
 }
 
 // Very simple substring / exact match (no heavy NLP)

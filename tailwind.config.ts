@@ -40,8 +40,9 @@ const config: Config = {
       },
 
       fontFamily: {
-        sans:  ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
-        hindi: ["Noto Sans Devanagari", "Inter", "sans-serif"],
+        // Backed by next/font CSS variables (self-hosted; see app/layout.tsx).
+        sans:  ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        hindi: ["var(--font-devanagari)", "var(--font-inter)", "sans-serif"],
       },
 
       fontSize: {

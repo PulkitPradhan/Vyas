@@ -12,6 +12,12 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+  // Strip console.* (except errors/warnings) from the production client bundle
+  // — smaller JS, less main-thread work (helps Lighthouse TBT).
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",

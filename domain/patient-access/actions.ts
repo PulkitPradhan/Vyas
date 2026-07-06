@@ -14,8 +14,11 @@ export async function askChatbot(
   input: { query: string; language: "en" | "hi"; facilityId?: string; patientSession: string }
 ): Promise<{ answer: string | null; grounded: boolean }> {
   
-  // Rate Limiting (20 req / minute per IP for public web chat)
-  const ip = headers().get("x-forwarded-for") || "unknown-ip";
+  // Rate Limiting (20 req / minute per IP for public web chat).
+  // headers() is async in Next.js 16 — must be awaited or the IP is always
+  // "unknown-ip" (every request shares one bucket, defeating the limiter).
+  const hdrs = await headers();
+  const ip = hdrs.get("x-forwarded-for") || "unknown-ip";
   const { allowed } = await checkRateLimit({
     ipOrPhone: ip,
     maxRequests: 20,

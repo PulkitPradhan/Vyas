@@ -48,14 +48,22 @@ export function forecastStock(input: ForecastInput): ForecastResult {
 //   🔴 critical: days-to-zero <= 3, OR bed occupancy 100%, OR doctor absent
 //                  past cutoff with no prior notice
 //   🟡 warning:  days-to-zero <= 7
-//   🟢 watch:    declining trend but outside the above thresholds
+//   🟢 watch:    declining trend but outside the above thresholds — capped at
+//                WATCH_WINDOW_DAYS so a facility with months of runway is not
+//                flagged. Beyond that, the stock is healthy and gets no flag.
 export type Severity = "critical" | "warning" | "watch";
+
+// A "declining trend" is only actionable inside a ~3-week horizon; past that,
+// there is nothing for an operator to do this cycle, so we don't flag it (this
+// prevents the dashboard from flooding with every item that has any history).
+const WATCH_WINDOW_DAYS = 21;
 
 export function severityForStock(daysToZero: number | null): Severity | null {
   if (daysToZero === null) return null; // no consumption recorded — don't flag
   if (daysToZero <= 3) return "critical";
   if (daysToZero <= 7) return "warning";
-  return "watch";
+  if (daysToZero <= WATCH_WINDOW_DAYS) return "watch";
+  return null; // healthy runway — no flag needed
 }
 
 export function severityForBed(occupied: number, total: number): Severity | null {

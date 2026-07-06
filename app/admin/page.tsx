@@ -13,10 +13,12 @@ export default async function AdminPage() {
   if (!staff) return null; // layout shows the not-registered notice
   if (staff.role !== "admin") return null; // layout shows the role-mismatch notice
 
+  // Pass the already-resolved staff context into each query so they don't each
+  // re-run getCurrentStaff (4× auth + staff reads for one page load).
   const [flags, facilities, suggestions] = await Promise.all([
-    getDistrictFlags(),
-    getDistrictFacilities(),
-    getDistrictSuggestions(),
+    getDistrictFlags(staff),
+    getDistrictFacilities(staff),
+    getDistrictSuggestions(staff),
   ]);
 
   // Only unresolved flags appear on the live dashboard — the runner escalates

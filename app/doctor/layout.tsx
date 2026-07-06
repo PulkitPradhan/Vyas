@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentStaff } from "@/lib/auth/context";
 import ThemeToggle from "@/components/ThemeToggle";
+import SignOutButton from "@/components/SignOutButton";
 
 export default async function DoctorLayout({ children }: { children: React.ReactNode }) {
   const staff = await getCurrentStaff();
@@ -26,12 +27,7 @@ export default async function DoctorLayout({ children }: { children: React.React
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <ThemeToggle />
-            <Link
-              href="/sign-out"
-              className="rounded-ms-sm border border-ms-border px-3 py-2 text-sm text-ms-textSecondary transition-colors hover:border-brand hover:text-brand"
-            >
-              Sign out
-            </Link>
+            <SignOutButton className="rounded-ms-sm border border-ms-border px-3 py-2 text-sm text-ms-textSecondary transition-colors hover:border-brand hover:text-brand" />
           </div>
         </div>
       </header>
@@ -41,7 +37,7 @@ export default async function DoctorLayout({ children }: { children: React.React
           <div className="rounded-ms-md border border-[#E8C97A] bg-warning-tint p-5 text-sm text-warning">
             <p className="font-semibold">Account not registered</p>
             <p className="mt-1">Your phone number is not registered as Vyas staff.{" "}
-              <a href="/sign-out" className="font-medium underline">Sign out</a>
+              <SignOutButton className="font-medium underline" />
             </p>
           </div>
         ) : (
