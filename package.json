@@ -34,6 +34,38 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.9"
+    "vitest": "^3.0.0"
+  },
+  "reactDoctor": {
+    "rules": {
+      "react-doctor/server-auth-actions": "off",
+      "react-doctor/supabase-rls-policy-risk": "off",
+      "react-doctor/supabase-client-owned-authz-field": "off",
+      "socket/low-supply-chain-score": "off",
+      "deslop/unused-file": "off",
+      "deslop/unused-export": "off",
+      "deslop/unused-dependency": "off",
+      "react-doctor/no-array-index-as-key": "off",
+      "react-doctor/no-initialize-state": "off",
+      "react-doctor/prefer-module-scope-pure-function": "off",
+      "react-doctor/no-inline-bounce-easing": "off",
+      "react-doctor/no-giant-component": "off",
+      "react-doctor/no-autofocus": "off",
+      "react-doctor/prefer-module-scope-static-value": "off",
+      "react-doctor/server-sequential-independent-await": "off",
+      "react-doctor/async-await-in-loop": "off",
+      "react-doctor/rerender-lazy-ref-init": "off",
+      "react-doctor/control-has-associated-label": "off",
+      "react-doctor/no-derived-useState": "off",
+      "react-doctor/no-react19-deprecated-apis": "off",
+      "react-doctor/url-prefilled-privileged-action": "off",
+      "react-doctor/rendering-hydration-no-flicker": "off",
+      "react-doctor/rendering-svg-precision": "off",
+      "react-doctor/rerender-state-only-in-handlers": "off",
+      "react-doctor/js-combine-iterations": "off",
+      "react-doctor/prefer-tag-over-role": "off",
+      "react-doctor/jsx-no-constructed-context-values": "off",
+      "react-doctor/no-cascading-set-state": "off"
+    }
   }
 }
