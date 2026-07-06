@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import LangToggle from "@/components/LangToggle";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import FlagsList from "./FlagsList";
 import type { FacilityMarker, FlagRow, SuggestionRow } from "@/domain/admin/queries";
 
@@ -23,7 +24,7 @@ export default function AdminDashboardClient({
   initialFacilities,
   initialSuggestions,
 }: Props) {
-  const [language, setLanguage] = useState<"en" | "hi">("en");
+  const { language, t } = useLanguage();
 
   const criticalCount = initialFlags.filter(f => f.severity === "critical").length;
   const warningCount  = initialFlags.filter(f => f.severity === "warning").length;
@@ -31,56 +32,34 @@ export default function AdminDashboardClient({
 
   return (
     <div className="space-y-6">
-      {/* ── Dashboard header ── */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-admin-xl font-extrabold tracking-tight text-ms-textPrimary">
-            District Dashboard
+            {t.admin_dashboard}
           </h1>
-          <p className="mt-1 text-admin-sm text-ms-textSecondary">Live facility flags · Redistribution suggestions</p>
+          <p className="mt-1 text-admin-sm text-ms-textSecondary">{t.live_alerts} · {t.redistribution}</p>
         </div>
 
-        {/* Language toggle */}
         <div className="flex items-center gap-2">
-          <span className="text-admin-xs text-ms-textSecondary">Language:</span>
-          <div className="inline-flex overflow-hidden rounded-ms-sm border border-ms-border bg-ms-surface text-admin-sm">
-            {(["en", "hi"] as const).map((l) => (
-              <button
-                key={l}
-                id={`lang-${l}`}
-                type="button"
-                onClick={() => setLanguage(l)}
-                className={`px-4 py-2 font-medium transition-colors ${
-                  language === l
-                    ? "bg-brand text-white"
-                    : "text-ms-textSecondary hover:bg-ms-surface2"
-                } ${l === "en" ? "" : "border-l border-ms-border"}`}
-              >
-                {l === "en" ? "EN" : "हिं"}
-              </button>
-            ))}
-          </div>
+          <LangToggle />
         </div>
       </div>
 
-      {/* ── Summary cards ── */}
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        <SummaryCard value={criticalCount} label="Critical" color="critical" />
-        <SummaryCard value={warningCount}  label="Warning"  color="warning" />
-        <SummaryCard value={watchCount}    label="Watch"    color="watch" />
+        <SummaryCard value={criticalCount} label={t.severity_critical} color="critical" />
+        <SummaryCard value={warningCount}  label={t.severity_warning}  color="warning" />
+        <SummaryCard value={watchCount}    label={t.severity_watch}    color="watch" />
       </div>
 
-      {/* ── Main content: flags + map ── */}
       <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
         <div className="min-w-0">
           <FlagsList
             initialFlags={initialFlags}
             initialSuggestions={initialSuggestions}
-            language={language}
           />
         </div>
         <div>
-          <h2 className="mb-3 text-admin-md font-semibold text-ms-textPrimary">Facilities Map</h2>
+          <h2 className="mb-3 text-admin-md font-semibold text-ms-textPrimary">{t.facilities_map}</h2>
           <div className="h-[380px] overflow-hidden rounded-ms-md border border-ms-border shadow-card">
             <FacilitiesMap facilities={initialFacilities} suggestions={initialSuggestions} />
           </div>
@@ -120,7 +99,7 @@ function SummaryCard({
     ),
   };
   return (
-    <div className={`rounded-ms-md border p-4 ${styles[color]}`}>
+    <div data-no-invert className={`rounded-ms-md border p-4 ${styles[color]}`}>
       <div className="flex items-center gap-2">
         {icons[color]}
         <span className="text-admin-xs font-medium">{label}</span>

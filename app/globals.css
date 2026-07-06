@@ -69,14 +69,26 @@
    after invert flips them.
 ───────────────────────────────────────────────── */
 html.theme-dark {
+  /* Override light backgrounds before inversion so they become gray instead of OLED black */
+  --ms-bg: #E0E4E8;
+  --ms-surface: #E8ECEF;
+  --ms-surface-2: #D1D5DB;
+  
   filter: invert(1) hue-rotate(180deg);
 }
 
-/* Images/videos must be double-inverted so they look natural in dark mode */
+/* Images/videos and brand/green colors must be double-inverted so they look natural in dark mode */
 html.theme-dark img,
 html.theme-dark video,
 html.theme-dark iframe,
 html.theme-dark canvas,
+html.theme-dark .bg-brand,
+html.theme-dark .text-brand,
+html.theme-dark .shadow-brand,
+html.theme-dark .bg-watch,
+html.theme-dark .text-watch,
+html.theme-dark .bg-watch-tint,
+html.theme-dark .shadow-watch,
 html.theme-dark [data-no-invert] {
   filter: invert(1) hue-rotate(180deg);
 }

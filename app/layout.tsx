@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { SyncProvider } from "@/lib/offline/sync-provider";
 import SyncBanner from "@/components/SyncBanner";
 
@@ -41,10 +42,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-ms-bg font-sans text-ms-textPrimary antialiased">
-        <SyncProvider>
-          <SyncBanner />
-          {children}
-        </SyncProvider>
+        <LanguageProvider>
+          <SyncProvider>
+            <SyncBanner />
+            {children}
+          </SyncProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

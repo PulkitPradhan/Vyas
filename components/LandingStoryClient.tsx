@@ -2,102 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, MouseEvent } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface Props {
   staff: { name: string; role: string } | null;
 }
-
-const ROLE_TILES = [
-  {
-    href: "/staff",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M9 12h6M12 9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z" stroke="currentColor" strokeWidth="1.5"/>
-      </svg>
-    ),
-    label: "Staff",
-    sublabel: "Nurse / Pharmacist",
-    desc: "Update stock, beds & patient footfall",
-    color: "brand",
-    badge: "Role-gated",
-  },
-  {
-    href: "/doctor",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <path d="M17 13.5v3M15.5 15H18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    ),
-    label: "Doctor",
-    sublabel: "Medical Officer",
-    desc: "Geo-tagged check-in & attendance record",
-    color: "watch",
-    badge: "Role-gated",
-  },
-  {
-    href: "/admin",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M14 17.5h7M17.5 14v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    ),
-    label: "District Admin",
-    sublabel: "Health Officer",
-    desc: "Live flagged-centre dashboard & AI redistribution",
-    color: "warning",
-    badge: "Admin only",
-  },
-  {
-    href: "/public",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M20 20l-2.5-2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      </svg>
-    ),
-    label: "Public Lookup",
-    sublabel: "No login needed",
-    desc: "Medicine · Beds · Doctors — available right now",
-    color: "critical",
-    badge: "Open access",
-  },
-];
-
-const STATS = [
-  { number: "< 5s", label: "per field update" },
-  { number: "100%", label: "offline-first" },
-  { number: "EN + हिं", label: "bilingual AI" },
-  { number: "Live", label: "real-time flags" },
-];
-
-const HOW_STEPS = [
-  {
-    step: "01",
-    title: "Staff logs in seconds",
-    body: "Pharmacists update stock via voice or tap. Nurses toggle beds. Doctors geo-check in — all in under 5 seconds, with or without signal.",
-  },
-  {
-    step: "02",
-    title: "AI detects problems early",
-    body: "Rolling stock projections, bed-occupancy thresholds, and attendance gaps are computed every minute and tiered by severity.",
-  },
-  {
-    step: "03",
-    title: "Admin sees live flags",
-    body: "District health officers see real-time flagged centres with one-line plain-language explanations in English & Hindi — and actionable redistribution suggestions.",
-  },
-  {
-    step: "04",
-    title: "Citizens check before they travel",
-    body: "A zero-login public page answers \"Is paracetamol available at PHC Rampur right now?\" — no wasted trips.",
-  },
-];
 
 const colorMap: Record<string, string> = {
   brand:    "text-brand bg-brand-tint border-brand-light hover:border-brand",
@@ -114,15 +23,14 @@ const shadowMap: Record<string, string> = {
 };
 
 export default function LandingStoryClient({ staff }: Props) {
+  const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
-  // Mark mounted so we can run scroll-reveal without hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Intersection observer for scroll-reveal (below-fold sections)
   useEffect(() => {
     if (!mounted) return;
     const cards = document.querySelectorAll(".js-reveal");
@@ -131,7 +39,7 @@ export default function LandingStoryClient({ staff }: Props) {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("revealed");
-            observer.unobserve(entry.target); // fire once
+            observer.unobserve(entry.target);
           }
         });
       },
@@ -141,14 +49,11 @@ export default function LandingStoryClient({ staff }: Props) {
     return () => observer.disconnect();
   }, [mounted]);
 
-  // 3D Tilt Effect on mouse move for cards (Hardware Accelerated)
   const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
-    // Only apply on non-touch devices
     if (window.matchMedia("(pointer: coarse)").matches) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2; // -1 to 1
-    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 2; // -1 to 1
-    // Max rotation 4deg for subtlety
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
     e.currentTarget.style.transform = `perspective(1000px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg) scale3d(1.02, 1.02, 1.02)`;
   };
 
@@ -156,20 +61,106 @@ export default function LandingStoryClient({ staff }: Props) {
     e.currentTarget.style.transform = "";
   };
 
+  const ROLE_TILES = [
+    {
+      href: "/staff",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M9 12h6M12 9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z" stroke="currentColor" strokeWidth="1.5"/>
+        </svg>
+      ),
+      label: t.role_staff,
+      sublabel: t.role_staff_sub,
+      desc: t.role_staff_desc,
+      color: "brand",
+      badge: t.role_staff_badge,
+    },
+    {
+      href: "/doctor",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M17 13.5v3M15.5 15H18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      ),
+      label: t.role_doctor,
+      sublabel: t.role_doctor_sub,
+      desc: t.role_doctor_desc,
+      color: "watch",
+      badge: t.role_staff_badge,
+    },
+    {
+      href: "/admin",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M14 17.5h7M17.5 14v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      ),
+      label: t.role_admin,
+      sublabel: t.role_admin_sub,
+      desc: t.role_admin_desc,
+      color: "warning",
+      badge: t.role_admin_badge,
+    },
+    {
+      href: "/public",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M20 20l-2.5-2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      ),
+      label: t.role_public,
+      sublabel: t.role_public_sub,
+      desc: t.role_public_desc,
+      color: "critical",
+      badge: t.role_public_badge,
+    },
+  ];
+
+  const STATS = [
+    { number: t.stat_1_num, label: t.stat_1_lbl },
+    { number: t.stat_2_num, label: t.stat_2_lbl },
+    { number: t.stat_3_num, label: t.stat_3_lbl },
+    { number: t.stat_4_num, label: t.stat_4_lbl },
+  ];
+
+  const HOW_STEPS = [
+    {
+      step: "01",
+      title: t.step1_title,
+      body: t.step1_desc,
+    },
+    {
+      step: "02",
+      title: t.step2_title,
+      body: t.step2_desc,
+    },
+    {
+      step: "03",
+      title: t.step3_title,
+      body: t.step3_desc,
+    },
+    {
+      step: "04",
+      title: t.step4_title,
+      body: t.step4_desc,
+    },
+  ];
+
   return (
     <>
-
-
       <main className="pt-[57px] overflow-x-hidden">
 
-        {/* ══════════════════════════════
-            HERO — always visible
-        ══════════════════════════════ */}
         <section
           className="relative flex min-h-[92svh] flex-col items-center justify-center px-4 py-20 text-center sm:py-28"
           ref={(el) => { sectionRefs.current[0] = el; }}
         >
-          {/* Subtle teal radial glow behind hero */}
           <div
             className="pointer-events-none absolute inset-0"
             style={{
@@ -178,7 +169,6 @@ export default function LandingStoryClient({ staff }: Props) {
             }}
             aria-hidden="true"
           />
-          {/* Grid dot pattern */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.04]"
             style={{
@@ -188,7 +178,6 @@ export default function LandingStoryClient({ staff }: Props) {
             aria-hidden="true"
           />
 
-          {/* Floating decorative elements */}
           <div className="absolute top-[20%] left-[10%] hidden lg:block opacity-40 animate-float" aria-hidden="true">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-brand">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
@@ -201,17 +190,16 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
 
           <div className="relative mx-auto max-w-3xl z-10">
-            {/* Eyebrow */}
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-light bg-brand-tint px-4 py-2 text-sm font-semibold text-brand shadow-sm">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand"></span>
               </span>
-              Offline-first · AI-powered · Real-time
+              {t.hero_eyebrow}
             </div>
 
             <h1 className="mb-6 text-[clamp(2.2rem,5vw,4rem)] font-extrabold leading-[1.1] tracking-tight text-ms-textPrimary">
-              District health ops,{" "}
+              {t.hero_title_1}
               <span
                 style={{
                   background: "linear-gradient(135deg, #0F6E5C 0%, #1A9B82 50%, #0A5548 100%)",
@@ -220,19 +208,20 @@ export default function LandingStoryClient({ staff }: Props) {
                   backgroundClip: "text",
                 }}
               >
-                actually working
+                {t.hero_title_2}
               </span>
             </h1>
 
             <p className="hero-animate hero-d3 mx-auto mb-10 max-w-xl text-[clamp(1rem,2vw,1.2rem)] leading-relaxed text-ms-textSecondary">
-              Vyas surfaces stock-outs, bed crises, and doctor absences{" "}
-              <strong className="font-semibold text-ms-textPrimary">
-                before a patient is turned away
-              </strong>{" "}
-              — in real time, in English and Hindi, on any phone, even offline.
+              {t.hero_desc.split('before a patient is turned away').map((part, i, arr) => 
+                i === 0 && arr.length > 1 ? (
+                  <span key={i}>{part}<strong className="font-semibold text-ms-textPrimary">before a patient is turned away</strong></span>
+                ) : (
+                  <span key={i}>{part}</span>
+                )
+              )}
             </p>
 
-            {/* CTAs */}
             <div className="hero-animate hero-d4 flex flex-wrap items-center justify-center gap-4">
               {staff ? (
                 <Link
@@ -243,36 +232,34 @@ export default function LandingStoryClient({ staff }: Props) {
                   }
                   className="rounded-ms-md bg-brand px-8 py-4 text-base font-bold text-white shadow-brand transition-all duration-300 hover:bg-brand-hover hover:shadow-lg active:scale-95"
                 >
-                  Go to your dashboard →
+                  {t.go_to_dashboard}
                 </Link>
               ) : (
                 <Link
                   href="/login"
                   className="rounded-ms-md bg-brand px-8 py-4 text-base font-bold text-white shadow-brand transition-all duration-300 hover:bg-brand-hover hover:shadow-[0_8px_30px_rgba(15,110,92,0.3)] active:scale-95"
                 >
-                  Staff Sign-in
+                  {t.staff_signin_btn}
                 </Link>
               )}
               <Link
                 href="/public"
                 className="rounded-ms-md border border-ms-border bg-ms-surface px-8 py-4 text-base font-bold text-ms-textPrimary shadow-card transition-all duration-300 hover:border-brand hover:text-brand hover:shadow-[0_8px_30px_rgba(15,110,92,0.15)] active:scale-95"
               >
-                Check availability — no login
+                {t.public_lookup_btn}
               </Link>
             </div>
 
-            {/* Auth context chip */}
             {staff && (
               <p className="hero-animate hero-d4 mt-6 text-sm text-ms-textSecondary">
-                Signed in as <strong className="text-ms-textPrimary">{staff.name}</strong> ({staff.role}) ·{" "}
+                {t.signed_in_as} <strong className="text-ms-textPrimary">{staff.name}</strong> ({staff.role}) ·{" "}
                 <a href="/sign-out" className="text-brand underline underline-offset-2 hover:text-brand-hover">
-                  Sign out
+                  {t.sign_out}
                 </a>
               </p>
             )}
           </div>
 
-          {/* Scroll hint */}
           <div className="hero-animate hero-d4 absolute bottom-6 left-1/2 -translate-x-1/2 text-ms-textDisabled" aria-hidden="true">
             <div className="animate-bounce">
               <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg">
@@ -282,9 +269,6 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            STATS BAR
-        ══════════════════════════════ */}
         <section className="border-y border-ms-border bg-ms-surface px-4 py-12 relative z-10">
           <div className="mx-auto grid max-w-content grid-cols-2 gap-8 sm:grid-cols-4">
             {STATS.map((s, i) => (
@@ -301,9 +285,6 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            PATIENT BANNER — prominent "no login" entry
-        ══════════════════════════════ */}
         <section className="px-4 py-12 bg-brand-tint border-b border-brand-light relative z-10">
           <div className="mx-auto max-w-content">
             <Link
@@ -321,14 +302,14 @@ export default function LandingStoryClient({ staff }: Props) {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xl font-extrabold text-ms-textPrimary group-hover:text-brand transition-colors">Check medicine &amp; bed availability</p>
+                  <p className="text-xl font-extrabold text-ms-textPrimary group-hover:text-brand transition-colors">{t.banner_title}</p>
                   <p className="mt-1 text-sm text-ms-textSecondary max-w-xl">
-                    No login · No account · Works in Hindi &amp; English · Find the nearest PHC with what you need instantly.
+                    {t.banner_desc}
                   </p>
                 </div>
               </div>
               <span className="flex flex-shrink-0 items-center gap-2 rounded-ms-sm bg-brand px-6 py-3.5 font-bold text-white shadow-brand transition-all group-hover:bg-brand-hover">
-                Open lookup
+                {t.open_lookup}
                 <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true">
                   <path fillRule="evenodd" d="M2 8a.75.75 0 01.75-.75h8.69L8.22 4.03a.75.75 0 011.06-1.06l4.5 4.5a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06-1.06l3.22-3.22H2.75A.75.75 0 012 8z" clipRule="evenodd"/>
                 </svg>
@@ -337,17 +318,14 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            ROLE TILES
-        ══════════════════════════════ */}
         <section className="px-4 py-20" ref={(el) => { sectionRefs.current[2] = el; }}>
           <div className="mx-auto max-w-content">
             <div className="js-reveal mb-12 text-center">
               <h2 className="text-[clamp(1.8rem,3vw,2.5rem)] font-extrabold tracking-tight text-ms-textPrimary">
-                One platform, every role
+                {t.one_platform}
               </h2>
               <p className="mt-3 text-lg text-ms-textSecondary">
-                Staff routes require a phone OTP sign-in. Patient lookup is open to all.
+                {t.one_platform_desc}
               </p>
             </div>
 
@@ -356,7 +334,6 @@ export default function LandingStoryClient({ staff }: Props) {
                 <Link
                   key={tile.href}
                   href={tile.href}
-                  id={`role-tile-${tile.label.toLowerCase().replace(/\s+/g, "-")}`}
                   className={`
                     js-reveal js-reveal-d${i + 1} tilt-card group relative flex flex-col gap-4 rounded-ms-lg
                     border border-ms-border bg-ms-surface p-6 shadow-card
@@ -388,16 +365,13 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            HOW IT WORKS
-        ══════════════════════════════ */}
         <section className="bg-ms-surface px-4 py-20 border-y border-ms-border relative overflow-hidden" ref={(el) => { sectionRefs.current[3] = el; }}>
           <div className="mx-auto max-w-content relative z-10">
             <div className="js-reveal mb-14 text-center">
               <h2 className="text-[clamp(1.8rem,3vw,2.5rem)] font-extrabold tracking-tight text-ms-textPrimary">
-                How it works
+                {t.how_it_works}
               </h2>
-              <p className="mt-3 text-lg text-ms-textSecondary">From data entry to district action in minutes.</p>
+              <p className="mt-3 text-lg text-ms-textSecondary">{t.how_it_works_desc}</p>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
@@ -421,17 +395,14 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            ARCHITECTURE & SECURITY (New Text Section)
-        ══════════════════════════════ */}
         <section className="px-4 py-20 bg-ms-bg">
           <div className="mx-auto max-w-content">
             <div className="js-reveal mb-12 text-center">
               <h2 className="text-[clamp(1.8rem,3vw,2.5rem)] font-extrabold tracking-tight text-ms-textPrimary">
-                Enterprise architecture for the edge
+                {t.arch_title}
               </h2>
               <p className="mt-3 text-lg text-ms-textSecondary max-w-2xl mx-auto">
-                Built specifically for the constraints of rural healthcare infrastructure.
+                {t.arch_desc}
               </p>
             </div>
             
@@ -442,10 +413,8 @@ export default function LandingStoryClient({ staff }: Props) {
                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
                    </svg>
                  </div>
-                 <h3 className="text-lg font-bold text-ms-textPrimary mb-2">Offline-First Queueing</h3>
-                 <p className="text-sm text-ms-textSecondary leading-relaxed">
-                   Leverages IndexedDB via Dexie.js. If a pharmacist updates stock while offline, the mutation is queued locally and automatically syncs to the server the moment connectivity returns, guaranteeing zero data loss.
-                 </p>
+                 <h3 className="text-lg font-bold text-ms-textPrimary mb-2">{t.arch_1_title}</h3>
+                 <p className="text-sm text-ms-textSecondary leading-relaxed">{t.arch_1_desc}</p>
               </div>
 
               <div className="js-reveal js-reveal-d2 rounded-ms-lg border border-ms-border bg-ms-surface p-6 shadow-sm">
@@ -454,10 +423,8 @@ export default function LandingStoryClient({ staff }: Props) {
                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                    </svg>
                  </div>
-                 <h3 className="text-lg font-bold text-ms-textPrimary mb-2">Role-Level Security (RLS)</h3>
-                 <p className="text-sm text-ms-textSecondary leading-relaxed">
-                   Powered by Supabase PostgreSQL RLS. Staff can only read and mutate data belonging to their assigned facility. District Admins are strictly scoped to facilities within their district bounds.
-                 </p>
+                 <h3 className="text-lg font-bold text-ms-textPrimary mb-2">{t.arch_2_title}</h3>
+                 <p className="text-sm text-ms-textSecondary leading-relaxed">{t.arch_2_desc}</p>
               </div>
 
               <div className="js-reveal js-reveal-d3 rounded-ms-lg border border-ms-border bg-ms-surface p-6 shadow-sm">
@@ -466,23 +433,18 @@ export default function LandingStoryClient({ staff }: Props) {
                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                    </svg>
                  </div>
-                 <h3 className="text-lg font-bold text-ms-textPrimary mb-2">Highly Optimized PWA</h3>
-                 <p className="text-sm text-ms-textSecondary leading-relaxed">
-                   Installable directly from the browser on iOS and Android. Minimal JS bundle size, fluid clamp-based typography scaling, and hardware-accelerated animations ensure a 95+ Lighthouse score even on budget devices.
-                 </p>
+                 <h3 className="text-lg font-bold text-ms-textPrimary mb-2">{t.arch_3_title}</h3>
+                 <p className="text-sm text-ms-textSecondary leading-relaxed">{t.arch_3_desc}</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            PROBLEM / SOLUTION
-        ══════════════════════════════ */}
         <section className="px-4 py-20 border-t border-ms-border" ref={(el) => { sectionRefs.current[4] = el; }}>
           <div className="mx-auto max-w-content">
             <div className="js-reveal mb-12 text-center">
               <h2 className="text-[clamp(1.8rem,3vw,2.5rem)] font-extrabold tracking-tight text-ms-textPrimary">
-                Built for the problem, not the boardroom
+                {t.problem_title}
               </h2>
             </div>
             <div className="grid items-start gap-8 lg:grid-cols-2">
@@ -493,10 +455,10 @@ export default function LandingStoryClient({ staff }: Props) {
                       <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/>
                     </svg>
                   </div>
-                  <span className="text-xl font-bold">The problem today</span>
+                  <span className="text-xl font-bold">{t.problem_sub1}</span>
                 </div>
                 <ul className="space-y-4">
-                  {["Stock-outs found when a patient asks — not before", "Empty beds nobody outside the facility knows about", "Doctor absences logged on paper, disputed later", "District admin sees problems via weekly paper reports"].map((item) => (
+                  {[t.prob1, t.prob2, t.prob3, t.prob4].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-base text-ms-textPrimary font-medium">
                       <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-critical shadow-[0_0_8px_rgba(214,69,69,0.6)]" aria-hidden="true" />
                       {item}
@@ -512,10 +474,10 @@ export default function LandingStoryClient({ staff }: Props) {
                       <path fillRule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm11.78-2.72a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-2-2a.75.75 0 111.06-1.06l1.47 1.47 3.97-3.97a.75.75 0 011.06 0z" clipRule="evenodd"/>
                     </svg>
                   </div>
-                  <span className="text-xl font-bold">Vyas solves it</span>
+                  <span className="text-xl font-bold">{t.problem_sub2}</span>
                 </div>
                 <ul className="space-y-4">
-                  {["Voice or tap stock updates in under 5 seconds", "One-tap bed toggle, visible district-wide instantly", "Geo-tagged doctor check-in, real-time attendance", "AI flags problems before they become crises"].map((item) => (
+                  {[t.sol1, t.sol2, t.sol3, t.sol4].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-base text-ms-textPrimary font-medium">
                       <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-watch shadow-[0_0_8px_rgba(46,139,87,0.6)]" aria-hidden="true" />
                       {item}
@@ -527,40 +489,37 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            AUTH INFO SECTION
-        ══════════════════════════════ */}
         <section className="bg-ms-surface border-t border-ms-border px-4 py-16">
           <div className="mx-auto max-w-content">
             <div className="js-reveal mb-12 text-center">
               <h2 className="text-[clamp(1.8rem,3vw,2.5rem)] font-extrabold tracking-tight text-ms-textPrimary">
-                Who logs in — and how
+                {t.auth_title}
               </h2>
             </div>
             <div className="grid gap-6 sm:grid-cols-3">
               {[
                 {
                   icon: "📱",
-                  title: "Field Staff",
-                  subtitle: "Nurse, Pharmacist, Doctor",
-                  body: "Phone OTP or Google account. Your district admin adds you to the system — then just tap Sign-in.",
-                  cta: { label: "Staff Sign-in", href: "/login" },
+                  title: t.auth_1_title,
+                  subtitle: t.auth_1_sub,
+                  body: t.auth_1_desc,
+                  cta: { label: t.auth_1_cta, href: "/login" },
                   color: "brand",
                 },
                 {
                   icon: "🏛️",
-                  title: "District Admin",
-                  subtitle: "Health Officer",
-                  body: "Same /login page — phone OTP or Google. Admin role is provisioned in Supabase by the system manager. No separate signup.",
-                  cta: { label: "Admin Login", href: "/login" },
+                  title: t.auth_2_title,
+                  subtitle: t.auth_2_sub,
+                  body: t.auth_2_desc,
+                  cta: { label: t.auth_2_cta, href: "/login" },
                   color: "warning",
                 },
                 {
                   icon: "👤",
-                  title: "Patient / Citizen",
-                  subtitle: "Public Lookup",
-                  body: "Zero login. Zero account. Just open the Public Lookup and check availability at any PHC near you.",
-                  cta: { label: "Open Lookup", href: "/public" },
+                  title: t.auth_3_title,
+                  subtitle: t.auth_3_sub,
+                  body: t.auth_3_desc,
+                  cta: { label: t.auth_3_cta, href: "/public" },
                   color: "watch",
                 },
               ].map((card, i) => (
@@ -588,44 +547,39 @@ export default function LandingStoryClient({ staff }: Props) {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            FINAL CTA
-        ══════════════════════════════ */}
         <section className="border-t border-ms-border bg-brand px-4 py-24 text-center relative overflow-hidden" ref={(el) => { sectionRefs.current[5] = el; }}>
-           {/* Abstract shape */}
            <div className="absolute top-0 right-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-white opacity-5 blur-3xl pointer-events-none" aria-hidden="true" />
            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-64 w-64 rounded-full bg-brand-hover opacity-50 blur-3xl pointer-events-none" aria-hidden="true" />
            
           <div className="mx-auto max-w-2xl relative z-10">
             <h2 className="mb-4 text-[clamp(2rem,4vw,3rem)] font-black text-white leading-tight">
-              Works on ₹6,000 phones in bright sunlight.
+              {t.cta_title}
             </h2>
             <p className="mb-10 text-lg text-brand-tint opacity-90">
-              Offline queue ensures no data is ever lost — even on 2G networks. Start checking resources instantly.
+              {t.cta_desc}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/public"
                 className="rounded-ms-md bg-white px-8 py-4 text-lg font-bold text-brand shadow-lg transition-all duration-300 hover:bg-brand-tint hover:shadow-xl active:scale-95"
               >
-                Try public lookup — no login
+                {t.cta_btn1}
               </Link>
               {!staff && (
                 <Link
                   href="/login"
                   className="rounded-ms-md border-2 border-white/40 px-8 py-4 text-lg font-bold text-white transition-all duration-300 hover:bg-white/10 hover:border-white active:scale-95"
                 >
-                  Staff sign-in
+                  {t.cta_btn2}
                 </Link>
               )}
             </div>
           </div>
         </section>
 
-        {/* Footer */}
         <footer className="border-t border-ms-border px-4 py-10 text-center text-sm text-ms-textDisabled bg-ms-surface">
-          <p className="font-medium text-ms-textSecondary">Vyas — District PHC/CHC Resource & Early-Warning Platform</p>
-          <p className="mt-2">Built for India's primary healthcare system · Offline-first · Open source</p>
+          <p className="font-medium text-ms-textSecondary">{t.footer_1}</p>
+          <p className="mt-2">{t.footer_2}</p>
         </footer>
       </main>
     </>

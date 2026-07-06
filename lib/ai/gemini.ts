@@ -259,11 +259,7 @@ export async function chatbotAnswer(input: ChatInput): Promise<string | null> {
 
 // ---------------------------------------------------------------------------
 // Public surface (single interface for a future provider swap per ADR-006).
+// Note: Next.js 'use server' files can ONLY export async functions, not objects/constants.
+// Functions are exported individually above.
 // ---------------------------------------------------------------------------
-export const gemini = {
-  explainAndStoreFlag,
-  generateFlagExplanation,
-  parseIntent,
-  chatbotAnswer,
-  MODEL,
-};
+

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient as createBrowserSupabase } from "@/lib/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import LangToggle from "@/components/LangToggle";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 let supabaseSingleton: SupabaseClient | null = null;
 const getClient = () => {
@@ -15,6 +17,7 @@ const getClient = () => {
 type Step = "choose" | "phone" | "email" | "otp" | "verifying" | "not_registered" | "error";
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [step, setStep] = useState<Step>("choose");
   const [phone, setPhone] = useState("");
@@ -31,7 +34,6 @@ export default function LoginPage() {
       : `+${digits}`;
   };
 
-  /* ── Email/Password ── */
   async function signInWithEmail(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -46,7 +48,6 @@ export default function LoginPage() {
       setMessage(error.message);
       return;
     }
-    // Resolve role
     const res = await fetch("/api/login-resolve", { method: "POST" });
     const data = await res.json();
     setBusy(false);
@@ -60,17 +61,16 @@ export default function LoginPage() {
       return;
     }
     setStep("error");
-    setMessage("Could not resolve your staff record. Try again.");
+    setMessage(t.resolve_error);
   }
 
-  /* ── Phone OTP ── */
   async function sendOtp(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
     const fullPhone = normalizePhone(phone);
     if (fullPhone.replace(/\D/g, "").length < 12) {
       setStep("error");
-      setMessage("Enter a valid 10-digit Indian phone number.");
+      setMessage(t.invalid_phone);
       return;
     }
     setBusy(true);
@@ -83,7 +83,7 @@ export default function LoginPage() {
       return;
     }
     setStep("otp");
-    setMessage(`OTP sent to ${fullPhone}.`);
+    setMessage(`${t.code_sent_to} ${fullPhone}.`);
   }
 
   async function verifyOtp(e: React.FormEvent) {
@@ -102,7 +102,6 @@ export default function LoginPage() {
       setMessage(error.message);
       return;
     }
-    // Resolve role
     const res = await fetch("/api/login-resolve", { method: "POST" });
     const data = (await res.json()) as
       | { ok: true; redirectTo: string; name: string }
@@ -118,7 +117,7 @@ export default function LoginPage() {
       return;
     }
     setStep("error");
-    setMessage("Could not resolve your staff record. Try again.");
+    setMessage(t.resolve_error);
   }
 
   const inputBase =
@@ -127,10 +126,10 @@ export default function LoginPage() {
     "focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
 
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-ms-bg px-4 py-12">
+    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-ms-bg px-4 py-12 relative">
+      <div className="absolute top-4 right-4"><LangToggle /></div>
       <div className="w-full max-w-sm">
 
-        {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-block">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-ms-md bg-brand shadow-brand">
@@ -140,16 +139,13 @@ export default function LoginPage() {
               </svg>
             </div>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-ms-textPrimary">Vyas</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-ms-textPrimary">{t.login_title}</h1>
           <p className="mt-1 text-sm text-ms-textSecondary">
-            {step === "choose" ? "Staff & Admin Sign-in" : step === "otp" || step === "verifying" ? "Enter your OTP" : "PHC/CHC Staff Sign-in"}
+            {t.login_subtitle}
           </p>
         </div>
 
-        {/* Card */}
         <div className="rounded-ms-md border border-ms-border bg-ms-surface p-6 shadow-card-lg">
-
-          {/* Error banner */}
           {step === "error" && message && (
             <div className="mb-4 flex items-start gap-2 rounded-ms-sm border border-[#EDB3B3] bg-critical-tint px-4 py-3 text-sm text-critical ms-xfade">
               <svg viewBox="0 0 16 16" fill="currentColor" className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true">
@@ -159,10 +155,8 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* ── CHOOSE METHOD (default first screen) ── */}
           {step === "choose" && (
             <div className="space-y-3">
-              {/* Email / Password */}
               <button
                 id="email-signin-btn"
                 type="button"
@@ -176,17 +170,15 @@ export default function LoginPage() {
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 text-ms-textSecondary" aria-hidden="true">
                   <path d="M3 4a2 2 0 00-2 2v8a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2H3zm14 2.2V6l-7 4.2L3 6v.2l7 4.2 7-4.2z" />
                 </svg>
-                Continue with Email
+                {t.continue_email}
               </button>
 
-              {/* Divider */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-ms-border" />
-                <span className="text-xs text-ms-textDisabled">or</span>
+                <span className="text-xs text-ms-textDisabled">{t.or}</span>
                 <div className="flex-1 h-px bg-ms-border" />
               </div>
 
-              {/* Phone OTP */}
               <button
                 id="phone-signin-btn"
                 type="button"
@@ -200,22 +192,20 @@ export default function LoginPage() {
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
                   <path fillRule="evenodd" d="M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z" clipRule="evenodd"/>
                 </svg>
-                Continue with Phone OTP
+                {t.continue_phone}
               </button>
 
-              {/* Info note */}
               <p className="text-center text-xs text-ms-textDisabled pt-1">
-                Admin accounts are provisioned in Supabase — no separate signup needed.
+                {t.admin_provision_note}
               </p>
             </div>
           )}
 
-          {/* ── EMAIL STEP ── */}
           {(step === "email") && (
             <form onSubmit={signInWithEmail} className="space-y-4">
               <div>
                 <label htmlFor="email-input" className="mb-1.5 block text-sm font-medium text-ms-textPrimary">
-                  Email Address
+                  {t.email}
                 </label>
                 <input
                   id="email-input"
@@ -230,7 +220,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <label htmlFor="password-input" className="mb-1.5 block text-sm font-medium text-ms-textPrimary">
-                  Password
+                  {t.password}
                 </label>
                 <input
                   id="password-input"
@@ -251,24 +241,23 @@ export default function LoginPage() {
                   disabled:cursor-not-allowed disabled:opacity-50
                 "
               >
-                {busy ? <span className="flex items-center justify-center gap-2"><Spinner /> Signing in…</span> : "Sign in →"}
+                {busy ? <span className="flex items-center justify-center gap-2"><Spinner /> {t.signing_in}</span> : t.sign_in}
               </button>
               <button
                 type="button"
                 onClick={() => setStep("choose")}
                 className="w-full text-sm text-ms-textSecondary hover:text-ms-textPrimary"
               >
-                ← Back
+                ← {t.back}
               </button>
             </form>
           )}
 
-          {/* ── PHONE STEP ── */}
           {(step === "phone" || step === "error") && (
             <form onSubmit={sendOtp} className="space-y-4">
               <div>
                 <label htmlFor="phone-input" className="mb-1.5 block text-sm font-medium text-ms-textPrimary">
-                  Phone number
+                  {t.phone_number}
                 </label>
                 <input
                   id="phone-input"
@@ -280,7 +269,7 @@ export default function LoginPage() {
                   autoFocus
                   required
                 />
-                <p className="mt-1 text-xs text-ms-textSecondary">Indian number — we will add +91</p>
+                <p className="mt-1 text-xs text-ms-textSecondary">{t.indian_number_note}</p>
               </div>
               <button
                 type="submit"
@@ -291,27 +280,26 @@ export default function LoginPage() {
                   disabled:cursor-not-allowed disabled:opacity-50
                 "
               >
-                {busy ? <span className="flex items-center justify-center gap-2"><Spinner /> Sending…</span> : "Send OTP →"}
+                {busy ? <span className="flex items-center justify-center gap-2"><Spinner /> {t.sending}</span> : t.send_code}
               </button>
               <button
                 type="button"
                 onClick={() => setStep("choose")}
                 className="w-full text-sm text-ms-textSecondary hover:text-ms-textPrimary"
               >
-                ← Back
+                ← {t.back}
               </button>
             </form>
           )}
 
-          {/* ── OTP STEP ── */}
           {(step === "otp" || step === "verifying") && (
             <form onSubmit={verifyOtp} className="space-y-4">
               <div className="rounded-ms-sm border border-brand-light bg-brand-tint px-4 py-3 text-sm text-brand ms-xfade">
-                Code sent to {normalizePhone(phone)}
+                {t.code_sent_to} {normalizePhone(phone)}
               </div>
               <div>
                 <label htmlFor="otp-input" className="mb-1.5 block text-sm font-medium text-ms-textPrimary">
-                  6-digit OTP
+                  {t.six_digit_otp}
                 </label>
                 <input
                   id="otp-input"
@@ -336,19 +324,18 @@ export default function LoginPage() {
                   disabled:cursor-not-allowed disabled:opacity-50
                 "
               >
-                {busy ? <span className="flex items-center justify-center gap-2"><Spinner /> Verifying…</span> : "Verify & Sign in"}
+                {busy ? <span className="flex items-center justify-center gap-2"><Spinner /> {t.verifying}</span> : t.verify_code}
               </button>
               <button
                 type="button"
                 onClick={() => { setStep("phone"); setOtp(""); setMessage(null); }}
                 className="w-full text-sm text-ms-textSecondary hover:text-ms-textPrimary"
               >
-                ← Use a different number
+                {t.use_different_number}
               </button>
             </form>
           )}
 
-          {/* ── NOT REGISTERED ── */}
           {step === "not_registered" && (
             <div className="space-y-4 text-center ms-xfade">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-warning-tint text-warning">
@@ -356,34 +343,31 @@ export default function LoginPage() {
                   <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/>
                 </svg>
               </div>
-              <p className="font-semibold text-ms-textPrimary">Not registered</p>
+              <p className="font-semibold text-ms-textPrimary">{t.not_registered}</p>
               <p className="text-sm text-ms-textSecondary">
-                This account is not in Vyas yet. Staff accounts are provisioned by your district admin — contact them to be added, then sign in again.
+                {t.not_registered_desc}
               </p>
               <button
                 type="button"
                 onClick={() => { setStep("choose"); setOtp(""); setMessage(null); }}
                 className="w-full rounded-ms-sm border border-ms-border px-4 py-3 text-sm font-medium hover:bg-ms-bg"
               >
-                Try a different method
+                {t.try_different_method}
               </button>
             </div>
           )}
         </div>
 
-        {/* Patient link */}
         <p className="mt-6 text-center text-sm text-ms-textSecondary">
-          Looking for medicine availability?{" "}
+          {t.looking_for_medicine}{" "}
           <Link href="/public" className="font-medium text-brand underline-offset-2 hover:underline">
-            Open public lookup — no login →
+            {t.open_public_lookup}
           </Link>
         </p>
       </div>
     </div>
   );
 }
-
-/* ── Sub-components ── */
 
 function Spinner({ className = "text-white" }: { className?: string }) {
   return (
@@ -393,5 +377,3 @@ function Spinner({ className = "text-white" }: { className?: string }) {
     </svg>
   );
 }
-
-

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentStaff } from "@/lib/auth/context";
 import ThemeToggle from "@/components/ThemeToggle";
+import LangToggle from "@/components/LangToggle";
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const staff = await getCurrentStaff();
@@ -27,6 +28,8 @@ export default async function StaffLayout({ children }: { children: React.ReactN
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
+            <LangToggle />
+            <div className="h-4 w-px bg-ms-border mx-1" aria-hidden="true" />
             <ThemeToggle />
             <Link
               href="/sign-out"

@@ -11,11 +11,21 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    // Persist across reloads
+    // 1. Check local storage
     const stored = localStorage.getItem("ms-theme");
     if (stored === "dark") {
       setDark(true);
       document.documentElement.classList.add("theme-dark");
+    } else if (stored === "light") {
+      // Do nothing, explicitly light
+    } else {
+      // 2. Auto-detect from OS/Browser if no local storage preference exists
+      if (typeof window !== "undefined" && window.matchMedia) {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          setDark(true);
+          document.documentElement.classList.add("theme-dark");
+        }
+      }
     }
   }, []);
 

@@ -6,14 +6,15 @@ import { createClient } from "@/lib/supabase/client";
 import SeverityBadge from "./SeverityBadge";
 import { updateSuggestionStatus, resolveFlag } from "@/domain/admin/actions";
 import type { FlagRow, SuggestionRow } from "@/domain/admin/queries";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface Props {
   initialFlags: FlagRow[];
   initialSuggestions: SuggestionRow[];
-  language: "en" | "hi";
 }
 
-export default function FlagsList({ initialFlags, initialSuggestions, language }: Props) {
+export default function FlagsList({ initialFlags, initialSuggestions }: Props) {
+  const { language, t } = useLanguage();
   const [flags, setFlags] = useState<FlagRow[]>(initialFlags);
   const [suggestions, setSuggestions] = useState<SuggestionRow[]>(initialSuggestions);
   const [busy, setBusy] = useState<Record<string, boolean>>({});
@@ -26,12 +27,10 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
     if (!res.ok) return;
     const data = (await res.json()) as { flags: FlagRow[] };
     if (!data?.flags) return;
-    // Find newly arrived flags for slide-in animation
     const incoming = new Set(data.flags.map(f => f.id));
     const arrived = data.flags.filter(f => !prevFlagIds.current.has(f.id)).map(f => f.id);
     if (arrived.length) {
       setNewFlagIds(prev => new Set([...prev, ...arrived]));
-      // Clear highlight after 1.5s
       setTimeout(() => setNewFlagIds(prev => {
         const next = new Set(prev);
         arrived.forEach(id => next.delete(id));
@@ -59,11 +58,11 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
     const text = language === "hi" ? f.reason_text_hi : f.reason_text_en;
     if (text) return text;
     switch (f.category) {
-      case "stock":  return `Low-stock projection flagged (${f.severity}). AI explanation pending.`;
-      case "bed":    return `Bed occupancy at/over threshold (${f.severity}).`;
-      case "doctor": return `No doctor check-in past cutoff (${f.severity}).`;
-      case "test":   return `Equipment/test non-functional (${f.severity}).`;
-      default:       return `Flag raised (${f.severity}).`;
+      case "stock":  return `${t.flag_stock} (${t[`severity_${f.severity}` as keyof typeof t]}). ${t.ai_pending}`;
+      case "bed":    return `${t.flag_bed} (${t[`severity_${f.severity}` as keyof typeof t]}).`;
+      case "doctor": return `${t.flag_doctor} (${t[`severity_${f.severity}` as keyof typeof t]}).`;
+      case "test":   return `${t.flag_test} (${t[`severity_${f.severity}` as keyof typeof t]}).`;
+      default:       return `${t.flag_general} (${t[`severity_${f.severity}` as keyof typeof t]}).`;
     }
   };
 
@@ -89,17 +88,16 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
 
   return (
     <div className="space-y-8">
-      {/* ── Flags section ── */}
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-admin-lg font-semibold text-ms-textPrimary">Live Flags</h2>
+          <h2 className="text-admin-lg font-semibold text-ms-textPrimary">{t.live_alerts}</h2>
           <span className={`flex items-center gap-1.5 text-admin-xs ${
             online ? "text-watch" : "text-warning"
           }`}>
             <span className={`h-1.5 w-1.5 rounded-full ${
               online ? "bg-watch animate-pulse" : "bg-warning"
             }`} aria-hidden="true" />
-            {online ? "real-time" : "offline — refreshes on reconnect"}
+            {online ? t.real_time : t.offline_refresh}
           </span>
         </div>
 
@@ -108,7 +106,7 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
             <svg viewBox="0 0 24 24" fill="none" className="h-10 w-10 text-ms-textDisabled" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <p className="text-admin-sm font-medium text-ms-textSecondary">All clear — no unresolved flags in your district.</p>
+            <p className="text-admin-sm font-medium text-ms-textSecondary">{t.no_alerts}</p>
           </div>
         ) : (
           <ul className="grid gap-3 lg:grid-cols-2">
@@ -122,7 +120,7 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
                 `}
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
-                  const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2; // -1 to 1
+                  const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
                   const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
                   e.currentTarget.style.transform = `perspective(800px) rotateY(${x * 2}deg) rotateX(${-y * 2}deg) scale(1.005)`;
                 }}
@@ -147,7 +145,7 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
                     disabled={!!busy[`f:${f.id}`]}
                     className="rounded-ms-sm border border-ms-border px-3 py-1.5 transition-colors hover:border-brand hover:text-brand disabled:opacity-50"
                   >
-                    {busy[`f:${f.id}`] ? "Resolving…" : "Mark resolved"}
+                    {busy[`f:${f.id}`] ? t.resolving : t.mark_resolved}
                   </button>
                 </div>
               </li>
@@ -156,12 +154,11 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
         )}
       </section>
 
-      {/* ── Redistribution suggestions ── */}
       <section>
-        <h2 className="mb-4 text-admin-lg font-semibold text-ms-textPrimary">Redistribution Suggestions</h2>
+        <h2 className="mb-4 text-admin-lg font-semibold text-ms-textPrimary">{t.redistribution}</h2>
         {suggestions.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-ms-md border border-dashed border-ms-border bg-ms-surface p-8 text-center">
-            <p className="text-admin-sm text-ms-textSecondary">No redistribution suggestions pending.</p>
+            <p className="text-admin-sm text-ms-textSecondary">{t.no_redist}</p>
           </div>
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -186,7 +183,7 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
                   <span className="truncate">{s.to_facility_name}</span>
                 </div>
                 <p className="mt-1 text-admin-xs text-ms-textSecondary">
-                  Qty: <strong>{s.suggested_qty}</strong> · {s.distance_km} km
+                  {t.qty}: <strong>{s.suggested_qty}</strong> · {s.distance_km} km
                 </p>
                 <div className="mt-3 flex gap-2">
                   <button
@@ -196,7 +193,7 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
                     disabled={!!busy[`s:${s.id}`] || s.status !== "pending"}
                     className="flex-1 rounded-ms-sm bg-brand px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-40"
                   >
-                    ✓ Actioned
+                    ✓ {t.actioned}
                   </button>
                   <button
                     id={`dismiss-suggestion-${s.id}`}
@@ -205,11 +202,11 @@ export default function FlagsList({ initialFlags, initialSuggestions, language }
                     disabled={!!busy[`s:${s.id}`] || s.status !== "pending"}
                     className="flex-1 rounded-ms-sm border border-ms-border px-3 py-2 text-xs font-medium transition-colors hover:bg-ms-surface2 disabled:opacity-40"
                   >
-                    Dismiss
+                    {t.dismiss}
                   </button>
                   {s.status !== "pending" && (
                     <span className="self-center text-xs font-medium uppercase text-ms-textDisabled">
-                      {s.status}
+                      {s.status === "actioned" ? t.actioned : (s.status === "dismissed" ? t.dismiss : t.pending)}
                     </span>
                   )}
                 </div>

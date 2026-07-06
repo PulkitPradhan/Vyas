@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentStaff } from "@/lib/auth/context";
 import ThemeToggle from "@/components/ThemeToggle";
+import LangToggle from "@/components/LangToggle";
 import LandingStoryClient from "@/components/LandingStoryClient";
 
 // Force dynamic — auth lookup is server-side
@@ -34,6 +35,7 @@ export default async function RootPage() {
                 {staff.name} · {staff.role}
               </span>
             ) : null}
+            <LangToggle />
             <ThemeToggle />
             {staff ? (
               <a
