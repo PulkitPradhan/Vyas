@@ -18,7 +18,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 // ===========================================================================
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = process.env.OPENROUTER_MODEL ?? "google/gemini-2.5-flash";
+const MODEL = process.env.OPENROUTER_MODEL ?? "hy3";
 
 export interface LLMMessage {
   role: "system" | "user" | "assistant" | "tool";
