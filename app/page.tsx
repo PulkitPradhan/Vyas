@@ -24,16 +24,28 @@ export default async function RootPage() {
       
       <main>
         <HeroSection />
-        <TrustedPartners />
         <TrustSection />
+        
+        {/* Key Features / Why Vayas */}
+        <FeaturesSection />
+        <WhyVayasSection />
+
+        {/* How Vayas Works */}
+        <HowItWorksSection />
+        <WhoUsesSection />
+
+        {/* Trusted Healthcare Partners */}
+        <TrustedPartners />
+
+        {/* About Vayas */}
         <div id="about">
           <AboutSection />
         </div>
-        <WhoUsesSection />
-        <HowItWorksSection />
-        <FeaturesSection />
-        <WhyVayasSection />
+
+        {/* FAQ */}
         <SupportSection />
+
+        {/* Contact */}
         <ContactSection />
       </main>
 
