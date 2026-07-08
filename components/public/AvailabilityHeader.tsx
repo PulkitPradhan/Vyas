@@ -23,7 +23,7 @@ export default function AvailabilityHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 flex justify-center px-4 pt-3 pb-2">
+    <header className="fixed top-0 left-0 right-0 w-full z-40 flex justify-center px-4 pt-3 pb-2">
       <nav
         className={`
           ms-pill-nav flex items-center gap-2 rounded-full border border-ms-border
