@@ -1,9 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Mail, Clock, MessageCircle, MonitorSmartphone, Send } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function ContactSection() {
+  const { t } = useLanguage();
   return (
     <section className="py-24 bg-ms-surface border-t border-ms-border relative overflow-hidden" id="contact">
       {/* Decorative Elements */}
@@ -17,25 +19,25 @@ export default function ContactSection() {
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           
           {/* Left Side: Info */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-ms-textPrimary tracking-tight mb-6">
-              Get in Touch
+              {t.contact_title}
             </h2>
             <p className="text-lg text-ms-textSecondary leading-relaxed mb-10 max-w-lg">
-              Have questions about Vayas, need technical support, or want to learn how the platform can help your district healthcare services? We&apos;d love to hear from you.
+              {t.contact_desc}
             </p>
 
             <div className="space-y-6">
               {[
-                { icon: Mail, title: "Email", text: "work.vayas@gmail.com", color: "brand" },
-                { icon: Clock, title: "Support Hours", text: "Monday – Friday\n9:00 AM – 7:00 PM (IST)", color: "watch" },
-                { icon: MessageCircle, title: "Response Time", text: "Usually within 24 hours", color: "warning" },
-                { icon: MonitorSmartphone, title: "Platform", text: "Available across mobile, tablet, and desktop.", color: "brand" }
+                { icon: Mail, title: t.contact_info_1_title, text: t.contact_info_1_text, color: "brand" },
+                { icon: Clock, title: t.contact_info_2_title, text: t.contact_info_2_text, color: "watch" },
+                { icon: MessageCircle, title: t.contact_info_3_title, text: t.contact_info_3_text, color: "warning" },
+                { icon: MonitorSmartphone, title: t.contact_info_4_title, text: t.contact_info_4_text, color: "brand" }
               ].map((info, idx) => (
                 <div key={idx} className="flex items-start gap-4">
                   <div className={`w-12 h-12 rounded-ms-md flex items-center justify-center shrink-0
@@ -51,70 +53,70 @@ export default function ContactSection() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Right Side: Form */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8 }}
           >
             <div className="bg-white/80 backdrop-blur-xl border border-white/60 shadow-card-lg rounded-ms-2xl p-8 relative">
-              <form className="space-y-5 relative z-10" onSubmit={(e) => e.preventDefault()}>
+              <div className="space-y-5 relative z-10">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-semibold text-ms-textPrimary mb-2">Full Name</label>
+                  <label htmlFor="name" className="block text-sm font-semibold text-ms-textPrimary mb-2">{t.contact_form_name}</label>
                   <input 
                     type="text" 
                     id="name"
                     className="w-full px-4 py-3 rounded-ms-md border border-ms-border bg-ms-bg focus:ring-2 focus:ring-brand/50 focus:border-brand outline-none transition-all"
-                    placeholder="John Doe"
+                    placeholder={t.contact_form_name_ph}
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-ms-textPrimary mb-2">Email Address</label>
+                  <label htmlFor="email" className="block text-sm font-semibold text-ms-textPrimary mb-2">{t.contact_form_email}</label>
                   <input 
                     type="email" 
                     id="email"
                     className="w-full px-4 py-3 rounded-ms-md border border-ms-border bg-ms-bg focus:ring-2 focus:ring-brand/50 focus:border-brand outline-none transition-all"
-                    placeholder="john@example.com"
+                    placeholder={t.contact_form_email_ph}
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-semibold text-ms-textPrimary mb-2">Phone Number <span className="text-ms-textDisabled font-normal">(Optional)</span></label>
+                  <label htmlFor="phone" className="block text-sm font-semibold text-ms-textPrimary mb-2">{t.contact_form_phone} <span className="text-ms-textDisabled font-normal">{t.contact_form_phone_opt}</span></label>
                   <input 
                     type="tel" 
                     id="phone"
                     className="w-full px-4 py-3 rounded-ms-md border border-ms-border bg-ms-bg focus:ring-2 focus:ring-brand/50 focus:border-brand outline-none transition-all"
-                    placeholder="+91 98765 43210"
+                    placeholder={t.contact_form_phone_ph}
                   />
                 </div>
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-semibold text-ms-textPrimary mb-2">Subject</label>
+                  <label htmlFor="subject" className="block text-sm font-semibold text-ms-textPrimary mb-2">{t.contact_form_subject}</label>
                   <input 
                     type="text" 
                     id="subject"
                     className="w-full px-4 py-3 rounded-ms-md border border-ms-border bg-ms-bg focus:ring-2 focus:ring-brand/50 focus:border-brand outline-none transition-all"
-                    placeholder="How can we help?"
+                    placeholder={t.contact_form_subject_ph}
                   />
                 </div>
                 <div>
-                  <label htmlFor="message" className="block text-sm font-semibold text-ms-textPrimary mb-2">Message</label>
+                  <label htmlFor="message" className="block text-sm font-semibold text-ms-textPrimary mb-2">{t.contact_form_msg}</label>
                   <textarea 
                     id="message"
                     rows={4}
                     className="w-full px-4 py-3 rounded-ms-md border border-ms-border bg-ms-bg focus:ring-2 focus:ring-brand/50 focus:border-brand outline-none transition-all resize-none"
-                    placeholder="Write your message here..."
+                    placeholder={t.contact_form_msg_ph}
                   ></textarea>
                 </div>
                 <button 
-                  type="submit"
+                  type="button"
                   className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-ms-md bg-brand text-white font-bold text-base shadow-brand transition-all duration-300 hover:bg-brand-hover active:scale-[0.98]"
                 >
                   <Send className="w-5 h-5" />
-                  Send Message
+                  {t.contact_form_submit}
                 </button>
-              </form>
+              </div>
             </div>
 
             {/* Google Maps Placeholder */}
@@ -122,13 +124,14 @@ export default function ContactSection() {
               <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle, #9CA3AF 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
               <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm border border-ms-border z-10 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-watch" />
-                <span className="text-sm font-semibold text-ms-textSecondary">Office Location Mapping Soon</span>
+                <span className="text-sm font-semibold text-ms-textSecondary">{t.contact_map_placeholder}</span>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
         </div>
       </div>
     </section>
   );
 }
+

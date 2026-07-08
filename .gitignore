@@ -34,3 +34,6 @@ next-env.d.ts
 /public/workbox-*.js.map
 
 .vercel
+
+.kilo
+.env*

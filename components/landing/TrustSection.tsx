@@ -1,42 +1,46 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { WifiOff, Brain, Clock, Languages } from "lucide-react";
 
-const TRUST_CARDS = [
-  {
-    icon: WifiOff,
-    title: "Offline First",
-    description: "Works even with poor internet connectivity.",
-    color: "brand",
-  },
-  {
-    icon: Brain,
-    title: "AI Powered",
-    description: "Turns healthcare data into meaningful insights.",
-    color: "watch",
-  },
-  {
-    icon: Clock,
-    title: "Real-Time Updates",
-    description: "Live visibility into district healthcare resources.",
-    color: "warning",
-  },
-  {
-    icon: Languages,
-    title: "Bilingual",
-    description: "Designed for both English and Hindi.",
-    color: "brand",
-  },
-];
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function TrustSection() {
+  const { t } = useLanguage();
+  
+  const TRUST_CARDS = [
+    {
+      icon: WifiOff,
+      title: t.trust_1_title,
+      description: t.trust_1_desc,
+      color: "brand",
+    },
+    {
+      icon: Brain,
+      title: t.trust_2_title,
+      description: t.trust_2_desc,
+      color: "watch",
+    },
+    {
+      icon: Clock,
+      title: t.trust_3_title,
+      description: t.trust_3_desc,
+      color: "warning",
+    },
+    {
+      icon: Languages,
+      title: t.trust_4_title,
+      description: t.trust_4_desc,
+      color: "brand",
+    },
+  ];
+
   return (
     <section className="relative -mt-10 pb-20 z-20">
       <div className="max-w-content mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {TRUST_CARDS.map((card, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -60,10 +64,11 @@ export default function TrustSection() {
                 <h3 className="text-lg font-bold text-ms-textPrimary mb-2">{card.title}</h3>
                 <p className="text-sm text-ms-textSecondary leading-relaxed">{card.description}</p>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
     </section>
   );
 }
+

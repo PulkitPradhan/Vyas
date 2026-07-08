@@ -8,7 +8,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 
 // ===========================================================================
 // Generative layer — Stage 3 of the AI pipeline (DESIGN.md §7, ADR-006).
-// Gemini via OpenRouter (free tier). 
+// Gemini via Google AI Studio API. 
 //
 // Failure isolation (ADR-005): the deterministic forecast/flagging logic in
 // Phase 6/7 does NOT call this module. Downstream callers (the flagging
@@ -17,8 +17,8 @@ import { createServiceClient } from "@/lib/supabase/server";
 // the friendly sentence is missing.
 // ===========================================================================
 
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = process.env.OPENROUTER_MODEL ?? "hy3";
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const MODEL = process.env.GEMINI_MODEL ?? "gemini-flash-latest";
 
 export interface LLMMessage {
   role: "system" | "user" | "assistant" | "tool";
@@ -51,9 +51,9 @@ export async function complete(
     }>;
   } = {}
 ): Promise<{ text: string | null; tool_calls?: LLMMessage["tool_calls"] }> {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!apiKey) {
-    console.warn("OPENROUTER_API_KEY not set — generative AI degraded");
+    console.warn("GOOGLE_GENERATIVE_AI_API_KEY not set — generative AI degraded");
     return { text: null };
   }
 
@@ -67,7 +67,7 @@ export async function complete(
   };
 
   try {
-    const res = await fetch(OPENROUTER_URL, {
+    const res = await fetch(GEMINI_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -79,7 +79,7 @@ export async function complete(
     });
 
     if (!res.ok) {
-      console.error("OpenRouter HTTP", res.status, await res.text().catch(() => ""));
+      console.error("Gemini API HTTP Error", res.status, await res.text().catch(() => ""));
       return { text: null };
     }
     const data = await res.json();
@@ -91,7 +91,7 @@ export async function complete(
       tool_calls: msg.tool_calls
     };
   } catch (err) {
-    console.error("OpenRouter fetch failed", err);
+    console.error("Gemini fetch failed", err);
     return { text: null };
   }
 }

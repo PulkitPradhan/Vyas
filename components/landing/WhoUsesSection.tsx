@@ -1,37 +1,41 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { UserPlus, Pill, Stethoscope, Users, Building2 } from "lucide-react";
 
-const USERS = [
-  {
-    icon: UserPlus,
-    title: "ANM / Nurse",
-    items: ["Quick patient counting", "Bed availability updates", "Simple one-tap reporting"],
-  },
-  {
-    icon: Pill,
-    title: "Pharmacist",
-    items: ["Update medicine stock", "Voice-assisted stock entry", "Early stock-out alerts"],
-  },
-  {
-    icon: Stethoscope,
-    title: "Doctor",
-    items: ["Quick attendance check-in", "Location verification", "Daily availability"],
-  },
-  {
-    icon: Users,
-    title: "Patients",
-    items: ["No login required", "Search nearby healthcare availability", "Find available medicines, doctors and beds"],
-  },
-  {
-    icon: Building2,
-    title: "District Administrator",
-    items: ["Live operational dashboard", "AI-generated insights", "Resource redistribution recommendations"],
-  },
-];
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function WhoUsesSection() {
+  const { t } = useLanguage();
+
+  const USERS = [
+    {
+      icon: UserPlus,
+      title: t.who_uses_1_title,
+      items: [t.who_uses_1_item1, t.who_uses_1_item2, t.who_uses_1_item3],
+    },
+    {
+      icon: Pill,
+      title: t.who_uses_2_title,
+      items: [t.who_uses_2_item1, t.who_uses_2_item2, t.who_uses_2_item3],
+    },
+    {
+      icon: Stethoscope,
+      title: t.who_uses_3_title,
+      items: [t.who_uses_3_item1, t.who_uses_3_item2, t.who_uses_3_item3],
+    },
+    {
+      icon: Users,
+      title: t.who_uses_4_title,
+      items: [t.who_uses_4_item1, t.who_uses_4_item2, t.who_uses_4_item3],
+    },
+    {
+      icon: Building2,
+      title: t.who_uses_5_title,
+      items: [t.who_uses_5_item1, t.who_uses_5_item2, t.who_uses_5_item3],
+    },
+  ];
+
   return (
     <section className="py-24 bg-ms-surface border-y border-ms-border relative overflow-hidden">
       {/* Decorative background element */}
@@ -39,19 +43,19 @@ export default function WhoUsesSection() {
 
       <div className="max-w-content mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-16">
-          <motion.h2 
+          <m.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-ms-textPrimary tracking-tight"
           >
-            Who Uses Vayas?
-          </motion.h2>
+            {t.who_uses_title}
+          </m.h2>
         </div>
 
         <div className="flex flex-wrap justify-center gap-6">
           {USERS.map((user, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -72,10 +76,11 @@ export default function WhoUsesSection() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
     </section>
   );
 }
+

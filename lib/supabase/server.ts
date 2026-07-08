@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import {
   createServerClient as createSSRClient,
-  createBrowserClient,
 } from "@supabase/ssr";
 import { createClient as createSupabaseClient, type SupabaseClient } from "@supabase/supabase-js";
 
@@ -65,5 +64,3 @@ export function createServiceClient(): SupabaseClient {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
-
-export { createBrowserClient };

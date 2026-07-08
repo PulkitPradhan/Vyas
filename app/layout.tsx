@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { SyncProvider } from "@/lib/offline/sync-provider";
 import SyncBanner from "@/components/SyncBanner";
+import { MotionProvider } from "@/components/MotionProvider";
 
 // Self-hosted via next/font: no render-blocking external stylesheet, fonts are
 // served same-origin with `font-display: swap` and preloaded automatically.
@@ -55,7 +56,9 @@ export default function RootLayout({
         <LanguageProvider>
           <SyncProvider>
             <SyncBanner />
-            {children}
+            <MotionProvider>
+              {children}
+            </MotionProvider>
           </SyncProvider>
         </LanguageProvider>
       </body>

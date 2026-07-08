@@ -1,69 +1,73 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Pill, Bed, Stethoscope, Wrench, Search, BrainCircuit, Mic, LayoutDashboard } from "lucide-react";
 
-const FEATURES = [
-  {
-    icon: Pill,
-    title: "Medicine Availability Monitoring",
-    description: "Monitor medicine inventory before shortages occur.",
-  },
-  {
-    icon: Bed,
-    title: "Bed Availability Tracking",
-    description: "Know available beds across healthcare centres.",
-  },
-  {
-    icon: Stethoscope,
-    title: "Doctor Attendance",
-    description: "Track healthcare staff presence.",
-  },
-  {
-    icon: Wrench,
-    title: "Equipment Monitoring",
-    description: "Identify broken or unavailable medical equipment.",
-  },
-  {
-    icon: Search,
-    title: "Patient Availability Search",
-    description: "Allow citizens to check nearby healthcare services without login.",
-  },
-  {
-    icon: BrainCircuit,
-    title: "AI Insights",
-    description: "Generate simple explanations and operational suggestions from healthcare data.",
-  },
-  {
-    icon: Mic,
-    title: "Voice & Multilingual Support",
-    description: "Support English and Hindi with voice input.",
-  },
-  {
-    icon: LayoutDashboard,
-    title: "Real-Time Dashboard",
-    description: "Monitor district-wide healthcare resources from one place.",
-  },
-];
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function FeaturesSection() {
+  const { t } = useLanguage();
+  
+  const FEATURES = [
+    {
+      icon: Pill,
+      title: t.feat_1_title,
+      description: t.feat_1_desc,
+    },
+    {
+      icon: Bed,
+      title: t.feat_2_title,
+      description: t.feat_2_desc,
+    },
+    {
+      icon: Stethoscope,
+      title: t.feat_3_title,
+      description: t.feat_3_desc,
+    },
+    {
+      icon: Wrench,
+      title: t.feat_4_title,
+      description: t.feat_4_desc,
+    },
+    {
+      icon: Search,
+      title: t.feat_5_title,
+      description: t.feat_5_desc,
+    },
+    {
+      icon: BrainCircuit,
+      title: t.feat_6_title,
+      description: t.feat_6_desc,
+    },
+    {
+      icon: Mic,
+      title: t.feat_7_title,
+      description: t.feat_7_desc,
+    },
+    {
+      icon: LayoutDashboard,
+      title: t.feat_8_title,
+      description: t.feat_8_desc,
+    },
+  ];
+
   return (
     <section className="py-24 bg-ms-surface border-t border-ms-border">
       <div className="max-w-content mx-auto px-4 sm:px-6">
         <div className="text-center mb-20">
-          <motion.h2 
+          <m.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-ms-textPrimary tracking-tight"
           >
-            Powerful Features
-          </motion.h2>
+            {t.features_title}
+          </m.h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {FEATURES.map((feature, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -78,10 +82,11 @@ export default function FeaturesSection() {
                 <h3 className="text-xl font-bold text-ms-textPrimary mb-2 group-hover:text-brand transition-colors">{feature.title}</h3>
                 <p className="text-ms-textSecondary leading-relaxed">{feature.description}</p>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
     </section>
   );
 }
+

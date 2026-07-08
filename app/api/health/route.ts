@@ -10,7 +10,7 @@ export async function GET() {
   const status = {
     status: error ? "error" : "ok",
     supabase: error ? "disconnected" : "connected",
-    openrouter: !!process.env.OPENROUTER_API_KEY ? "configured" : "missing",
+    gemini: !!process.env.GOOGLE_GENERATIVE_AI_API_KEY ? "configured" : "missing",
     timestamp: new Date().toISOString(),
   };
 

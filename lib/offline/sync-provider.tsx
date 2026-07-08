@@ -197,27 +197,3 @@ export function useSync(): SyncContextValue {
   }
   return ctx;
 }
-
-// Convenience: derive the banner label.
-export function useSyncBanner(): { tone: "online" | "offline" | "syncing"; text: string } {
-  const { online, queueLength, flushing } = useSync();
-  if (!online) {
-    return {
-      tone: "offline",
-      text:
-        queueLength > 0
-          ? `Offline — ${queueLength} action${queueLength === 1 ? "" : "s"} queued`
-          : "Offline — changes will queue locally",
-    };
-  }
-  if (flushing || queueLength > 0) {
-    return {
-      tone: "syncing",
-      text:
-        queueLength > 0
-          ? `Syncing… ${queueLength} queued`
-          : "Synced",
-    };
-  }
-  return { tone: "online", text: "Synced" };
-}

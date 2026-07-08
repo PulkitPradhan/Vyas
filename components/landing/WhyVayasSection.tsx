@@ -1,32 +1,36 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 
-const REASONS = [
-  {
-    title: "Offline First",
-    description: "Built for unreliable networks.",
-  },
-  {
-    title: "Fast Updates",
-    description: "One-tap reporting.",
-  },
-  {
-    title: "AI Assistance",
-    description: "Actionable insights instead of raw numbers.",
-  },
-  {
-    title: "Citizen Friendly",
-    description: "Public service lookup without login.",
-  },
-  {
-    title: "District Ready",
-    description: "Supports PHCs and CHCs across districts.",
-  },
-];
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function WhyVayasSection() {
+  const { t } = useLanguage();
+
+  const REASONS = [
+    {
+      title: t.why_1_title,
+      description: t.why_1_desc,
+    },
+    {
+      title: t.why_2_title,
+      description: t.why_2_desc,
+    },
+    {
+      title: t.why_3_title,
+      description: t.why_3_desc,
+    },
+    {
+      title: t.why_4_title,
+      description: t.why_4_desc,
+    },
+    {
+      title: t.why_5_title,
+      description: t.why_5_desc,
+    },
+  ];
+
   return (
     <section className="py-24 bg-brand relative overflow-hidden">
       {/* Decorative Background */}
@@ -35,19 +39,19 @@ export default function WhyVayasSection() {
 
       <div className="max-w-content mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-16">
-          <motion.h2 
+          <m.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-white tracking-tight"
           >
-            Why Vayas?
-          </motion.h2>
+            {t.why_vayas_title}
+          </m.h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
           {REASONS.map((reason, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -60,10 +64,11 @@ export default function WhyVayasSection() {
                 <h3 className="text-lg font-bold text-white mb-1">{reason.title}</h3>
                 <p className="text-brand-tint/80 text-sm">{reason.description}</p>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
     </section>
   );
 }
+

@@ -1,16 +1,18 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function AboutSection() {
+  const { t } = useLanguage();
   return (
     <section className="py-24 bg-ms-bg">
       <div className="max-w-content mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           
           {/* Left: Illustration */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -20,7 +22,7 @@ export default function AboutSection() {
             {/* Abstract Decorative Elements for Illustration */}
             <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle, #0F6E5C 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
             
-            <motion.div 
+            <m.div 
               animate={{ y: [-10, 10, -10] }}
               transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
               className="w-64 h-64 bg-white rounded-full shadow-brand flex items-center justify-center p-8 z-10"
@@ -32,50 +34,51 @@ export default function AboutSection() {
                   <path d="M12 12v4M12 8v2M9 12h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                  </svg>
               </div>
-            </motion.div>
+            </m.div>
 
-            <motion.div
+            <m.div
               animate={{ x: [0, 15, 0] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
               className="absolute bottom-10 left-10 bg-white px-4 py-2 rounded-lg shadow-card border border-ms-border flex items-center gap-2 z-20"
             >
                <div className="w-3 h-3 rounded-full bg-watch animate-pulse" />
-               <span className="text-sm font-semibold text-ms-textPrimary">System Online</span>
-            </motion.div>
+               <span className="text-sm font-semibold text-ms-textPrimary">{t.about_system_online}</span>
+            </m.div>
 
-          </motion.div>
+          </m.div>
 
           {/* Right: Text Content */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-ms-textPrimary tracking-tight mb-6">
-              What is Vayas?
+              {t.about_title}
             </h2>
             <div className="space-y-6 text-lg text-ms-textSecondary leading-relaxed mb-8">
               <p>
-                Vayas is an AI-powered district healthcare operations platform built to help Primary Health Centres (PHCs) and Community Health Centres (CHCs) stay one step ahead of operational challenges.
+                {t.about_p1}
               </p>
               <p>
-                By providing real-time visibility into medicine stock, bed availability, doctor attendance, and medical equipment status, Vayas enables healthcare workers and district administrators to make faster, better-informed decisions before shortages impact patient care.
+                {t.about_p2}
               </p>
               <p>
-                Designed with an offline-first approach, Vayas works reliably even in areas with poor internet connectivity, ensuring that critical healthcare information remains accessible whenever it's needed.
+                {t.about_p3}
               </p>
             </div>
             <Link
               href="/about"
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-brand-tint text-brand font-bold text-base transition-all duration-300 hover:bg-brand hover:text-white"
             >
-              Learn More
+              {t.about_btn}
             </Link>
-          </motion.div>
+          </m.div>
 
         </div>
       </div>
     </section>
   );
 }
+

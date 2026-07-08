@@ -5,12 +5,14 @@ import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import LangToggle from "@/components/LangToggle";
 import SignOutButton from "@/components/SignOutButton";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface NavBarProps {
   staff: { name: string; role: string } | null;
 }
 
 export default function NavBar({ staff }: NavBarProps) {
+  const { t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -39,16 +41,16 @@ export default function NavBar({ staff }: NavBarProps) {
             </svg>
           </div>
           <span className="text-xl font-bold tracking-tight text-ms-textPrimary">
-            Vayas
+            {t.login_title}
           </span>
         </div>
 
         {/* Center Menu (Desktop) */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className="text-sm font-semibold text-ms-textPrimary hover:text-brand transition-colors">Home</Link>
-          <Link href="/#about" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">About Vayas</Link>
-          <Link href="/#support" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">Help & Support</Link>
-          <Link href="/#contact" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">Contact Us</Link>
+          <Link href="/" className="text-sm font-semibold text-ms-textPrimary hover:text-brand transition-colors">{t.nav_home}</Link>
+          <Link href="/#about" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_about}</Link>
+          <Link href="/#support" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_support}</Link>
+          <Link href="/#contact" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_contact}</Link>
         </div>
 
         {/* Right Controls */}
@@ -72,7 +74,7 @@ export default function NavBar({ staff }: NavBarProps) {
               href="/login"
               className="rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-white shadow-brand transition-all hover:bg-brand-hover active:scale-95"
             >
-              Staff Sign In
+              {t.nav_staff_signin}
             </Link>
           )}
         </div>
@@ -80,3 +82,4 @@ export default function NavBar({ staff }: NavBarProps) {
     </nav>
   );
 }
+

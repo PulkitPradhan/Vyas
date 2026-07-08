@@ -27,14 +27,5 @@ export interface ActionResult {
 // the single canonical envelope stored and replayed. (An earlier duplicate
 // `QueuedAction` interface here was unused and has been removed.)
 
-// Resource-monitoring action keys — consumed by the offline replay router and
 // by anything enumerating the staff-data-entry actions. Lives here (not in a
 // "use server" file) so importing it never breaks Server-Action bundling rules.
-export const RESOURCE_ACTION_KEYS: ActionKey[] = [
-  "stock.adjust",
-  "stock.restock",
-  "bed.set",
-  "bed.toggle",
-  "test.set",
-  "footfall.increment",
-];

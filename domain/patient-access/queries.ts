@@ -1,5 +1,3 @@
-import { createClient as createBrowserSupabase } from "@supabase/supabase-js";
-
 // Patient Access bounded context (Phase 11, ADR-008). READ-ONLY, anonymous,
 // no login. The browser hits Supabase directly with the anon key; RLS grants
 // anon SELECT on exactly the public-readable fields (facilities, stock_items,
@@ -30,18 +28,6 @@ export interface PatientBedStatus {
 export interface PatientTestStatus {
   test_name: string;
   is_functional: boolean;
-}
-
-// The patient client is built lazily on the client (browser) since this module
-// is imported by both the server page (initial render) and client components.
-// On the server it returns an unusable stub; the client-only exports below
-// are what UI calls actually use.
-export function createPatientClient(): ReturnType<typeof createBrowserSupabase> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-  // Supabase client isomorphic in browser + server; RLS enforces anon read
-  // scope regardless of environment.
-  return createBrowserSupabase(url, anon, { auth: { persistSession: false } });
 }
 
 // Server-side initial reads for the public page (so the first paint is real,

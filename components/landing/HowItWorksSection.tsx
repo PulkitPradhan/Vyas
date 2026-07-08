@@ -1,44 +1,48 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Edit3, RefreshCw, BrainCircuit, ShieldCheck } from "lucide-react";
 
-const STEPS = [
-  {
-    icon: Edit3,
-    title: "Step 1",
-    description: "Healthcare staff update information.",
-  },
-  {
-    icon: RefreshCw,
-    title: "Step 2",
-    description: "Vayas validates and syncs data.",
-  },
-  {
-    icon: BrainCircuit,
-    title: "Step 3",
-    description: "AI identifies shortages and service risks.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Step 4",
-    description: "Citizens and district administrators receive accurate, real-time availability.",
-  },
-];
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function HowItWorksSection() {
+  const { t } = useLanguage();
+
+  const STEPS = [
+    {
+      icon: Edit3,
+      title: t.how_step1_title,
+      description: t.how_step1_desc,
+    },
+    {
+      icon: RefreshCw,
+      title: t.how_step2_title,
+      description: t.how_step2_desc,
+    },
+    {
+      icon: BrainCircuit,
+      title: t.how_step3_title,
+      description: t.how_step3_desc,
+    },
+    {
+      icon: ShieldCheck,
+      title: t.how_step4_title,
+      description: t.how_step4_desc,
+    },
+  ];
+
   return (
     <section className="py-24 bg-ms-bg relative">
       <div className="max-w-content mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <motion.h2 
+          <m.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-ms-textPrimary tracking-tight"
           >
-            How Vayas Works
-          </motion.h2>
+            {t.how_it_works_title}
+          </m.h2>
         </div>
 
         <div className="relative">
@@ -47,7 +51,7 @@ export default function HowItWorksSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-6 relative z-10">
             {STEPS.map((step, index) => (
-              <motion.div
+              <m.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -74,7 +78,7 @@ export default function HowItWorksSection() {
                 {index !== STEPS.length - 1 && (
                   <div className="h-12 w-1 bg-brand-tint md:hidden my-2" />
                 )}
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -82,3 +86,4 @@ export default function HowItWorksSection() {
     </section>
   );
 }
+

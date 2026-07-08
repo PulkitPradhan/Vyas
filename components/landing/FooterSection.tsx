@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { Mail } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function FooterSection() {
+  const { t } = useLanguage();
   return (
     <footer className="bg-ms-surface border-t border-ms-border pt-16 pb-8">
       <div className="max-w-content mx-auto px-4 sm:px-6">
@@ -19,38 +21,38 @@ export default function FooterSection() {
                 </svg>
               </div>
               <span className="text-xl font-bold tracking-tight text-ms-textPrimary">
-                Vayas
+                {t.login_title}
               </span>
             </div>
             <p className="text-sm text-ms-textSecondary leading-relaxed pr-4">
-              Empowering district healthcare systems with real-time operational intelligence.
+              {t.footer_desc}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-ms-textPrimary mb-6">Quick Links</h4>
+            <h4 className="font-bold text-ms-textPrimary mb-6">{t.footer_quick_links}</h4>
             <ul className="space-y-4">
-              <li><Link href="/" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">Home</Link></li>
-              <li><Link href="/#about" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">About Vayas</Link></li>
-              <li><Link href="/#support" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">Help & Support</Link></li>
-              <li><Link href="/#contact" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">Contact Us</Link></li>
+              <li><Link href="/" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_home}</Link></li>
+              <li><Link href="/#about" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_about}</Link></li>
+              <li><Link href="/#support" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_support}</Link></li>
+              <li><Link href="/#contact" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_contact}</Link></li>
             </ul>
           </div>
 
           {/* Resources */}
           <div>
-            <h4 className="font-bold text-ms-textPrimary mb-6">Resources</h4>
+            <h4 className="font-bold text-ms-textPrimary mb-6">{t.footer_resources}</h4>
             <ul className="space-y-4">
-              <li><Link href="/#support" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">FAQs</Link></li>
-              <li><Link href="/privacy" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/#support" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.footer_faqs}</Link></li>
+              <li><Link href="/privacy" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.footer_privacy}</Link></li>
+              <li><Link href="/terms" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.footer_terms}</Link></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="font-bold text-ms-textPrimary mb-6">Contact</h4>
+            <h4 className="font-bold text-ms-textPrimary mb-6">{t.footer_contact}</h4>
             <ul className="space-y-4">
               <li>
                 <a href="mailto:work.vayas@gmail.com" className="flex items-center gap-2 text-sm text-ms-textSecondary hover:text-brand transition-colors">
@@ -66,13 +68,14 @@ export default function FooterSection() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-ms-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-ms-textDisabled">
-            &copy; 2026 Vayas. All rights reserved.
+            {t.footer_rights}
           </p>
           <p className="text-sm font-medium text-brand">
-            Built for better public healthcare.
+            {t.footer_built}
           </p>
         </div>
       </div>
     </footer>
   );
 }
+
