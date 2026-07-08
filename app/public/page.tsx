@@ -19,7 +19,7 @@ export default async function PublicPage() {
   return (
     <PatientLookupClient
       facilities={facilities}
-      initialFacilityId={initialFacility?.id ?? null}
+      initialFacilityId={null}
       initialAvailability={initialAvailability}
     />
   );

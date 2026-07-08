@@ -59,26 +59,8 @@ export default function PatientLookupClient({
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat]);
 
-  async function selectFacility(id: string) {
+  function selectFacility(id: string) {
     setFacilityId(id);
-    setLoading(true);
-    try {
-      const res = await fetch("/api/public/availability", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ facilityId: id }),
-      });
-      if (res.ok) {
-        const data = (await res.json()) as {
-          stock: PatientStockItem[];
-          beds: PatientBedStatus | null;
-          tests: PatientTestStatus[];
-        };
-        setAvailability(data);
-      }
-    } finally {
-      setLoading(false);
-    }
   }
 
   async function sendChat(e: React.FormEvent) {
@@ -172,131 +154,32 @@ export default function PatientLookupClient({
               w-full rounded-ms-sm border border-ms-border bg-ms-surface
               px-4 py-3 text-ms-textPrimary
               focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20
+              transition-all duration-300
             "
             style={{ minHeight: "48px" }}
           >
-            {facilities.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.name} ({f.type}) — {f.block}
-              </option>
-            ))}
+            <option value="" disabled hidden>Select a Health Centre</option>
+            <option value="PHC">Primary Health Centre (PHC)</option>
+            <option value="CHC">Community Health Centre (CHC)</option>
+            <option value="Private">Private Health Centre</option>
           </select>
         </div>
 
-        {selectedFacility && !loading && (
-          <div className="mb-4 flex items-center gap-2 rounded-ms-sm border border-brand-light bg-brand-tint px-4 py-2.5 text-sm font-medium text-brand">
-            <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4" aria-hidden="true">
-              <path fillRule="evenodd" d="M8 0C5.243 0 3 2.243 3 5c0 2.67 4.196 8.578 4.385 8.829a.75.75 0 001.23 0C8.804 13.578 13 7.67 13 5c0-2.757-2.243-5-5-5zm0 7a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
-            </svg>
-            {t.showing_data_for} {selectedFacility.name}
-          </div>
-        )}
-
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <svg className="h-6 w-6 animate-spin text-brand" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-            </svg>
-            <span className="ml-3 text-sm text-ms-textSecondary">{t.loading_avail}</span>
+        {!facilityId ? (
+          <div className="mt-6 flex flex-col items-center justify-center rounded-ms-md border border-ms-border bg-ms-surface p-12 text-center shadow-card transition-all duration-500 ms-fade-rise">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-brand-tint text-brand">
+              <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              </svg>
+            </div>
+            <h3 className="mb-2 text-lg font-bold text-ms-textPrimary">Select a Health Centre</h3>
+            <p className="max-w-md text-sm text-ms-textSecondary">
+              Choose a Primary Health Centre, Community Health Centre, or Private Health Centre to view available healthcare information and ask the AI assistant.
+            </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
-            <section className="rounded-ms-md border border-ms-border bg-ms-surface p-5 shadow-card">
-              <h2 className="mb-3 flex items-center gap-2 font-semibold text-ms-textPrimary">
-                <span aria-hidden="true">💊</span>
-                {t.medicines}
-              </h2>
-              {availability.stock.length === 0 ? (
-                <p className="text-sm text-ms-textSecondary">{t.none_listed}</p>
-              ) : (
-                <ul className="space-y-2">
-                  {availability.stock.map((s, i) => {
-                    const ok = s.quantity > 10;
-                    return (
-                      <li key={i} className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span
-                            className={`h-2 w-2 flex-shrink-0 rounded-full ${ok ? "bg-watch" : "bg-warning"}`}
-                            aria-hidden="true"
-                          />
-                          <span className="truncate text-ms-textPrimary">{s.item_name}</span>
-                        </div>
-                        <span className={`ml-2 flex-shrink-0 font-semibold tabular-nums ${ok ? "text-watch" : "text-warning"}`}>
-                          {s.quantity} {s.unit}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </section>
-
-            <section className="rounded-ms-md border border-ms-border bg-ms-surface p-5 shadow-card">
-              <h2 className="mb-3 flex items-center gap-2 font-semibold text-ms-textPrimary">
-                <span aria-hidden="true">🛏</span>
-                {t.beds}
-              </h2>
-              {availability.beds ? (
-                <div>
-                  <div className="flex items-end gap-2">
-                    <span className="text-hero font-extrabold tabular-nums text-ms-textPrimary">
-                      {availability.beds.available}
-                    </span>
-                    <span className="mb-1 text-sm text-ms-textSecondary">
-                      / {availability.beds.total} {t.free}
-                    </span>
-                  </div>
-                  {availability.beds.available === 0 && (
-                    <span className="mt-2 inline-flex items-center gap-1 rounded-full border border-[#EDB3B3] bg-critical-tint px-3 py-1 text-xs font-semibold text-critical">
-                      <svg viewBox="0 0 10 10" fill="currentColor" className="h-2.5 w-2.5" aria-hidden="true">
-                        <path fillRule="evenodd" d="M5 1a4 4 0 100 8A4 4 0 005 1zM4.25 2.75a.75.75 0 011.5 0v2a.75.75 0 01-1.5 0v-2zm.75 4.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd"/>
-                      </svg>
-                      {t.full}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-ms-textSecondary">{t.no_bed_data}</p>
-              )}
-            </section>
-
-            <section className="rounded-ms-md border border-ms-border bg-ms-surface p-5 shadow-card">
-              <h2 className="mb-3 flex items-center gap-2 font-semibold text-ms-textPrimary">
-                <span aria-hidden="true">🔬</span>
-                {t.tests}
-              </h2>
-              {availability.tests.length === 0 ? (
-                <p className="text-sm text-ms-textSecondary">{t.none_listed}</p>
-              ) : (
-                <ul className="space-y-2">
-                  {availability.tests.map((tItem, i) => (
-                    <li key={i} className="flex items-center justify-between text-sm">
-                      <span className="truncate text-ms-textPrimary">{tItem.test_name}</span>
-                      <span className={`ml-2 flex flex-shrink-0 items-center gap-1 font-semibold ${
-                        tItem.is_functional ? "text-watch" : "text-critical"
-                      }`}>
-                        {tItem.is_functional ? (
-                          <svg viewBox="0 0 12 12" fill="currentColor" className="h-3 w-3" aria-hidden="true">
-                            <path fillRule="evenodd" d="M10.03 3.22a.75.75 0 010 1.06L5.5 8.81 2.97 6.28a.75.75 0 011.06-1.06L5.5 6.69l3.47-3.47a.75.75 0 011.06 0z" clipRule="evenodd"/>
-                          </svg>
-                        ) : (
-                          <svg viewBox="0 0 12 12" fill="currentColor" className="h-3 w-3" aria-hidden="true">
-                            <path d="M3.22 3.22a.75.75 0 011.06 0L6 4.94l1.72-1.72a.75.75 0 111.06 1.06L7.06 6l1.72 1.72a.75.75 0 11-1.06 1.06L6 7.06l-1.72 1.72a.75.75 0 01-1.06-1.06L4.94 6 3.22 4.28a.75.75 0 010-1.06z"/>
-                          </svg>
-                        )}
-                        {tItem.is_functional ? t.functional : t.non_functional}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          </div>
-        )}
-
-        <section className="mt-6 rounded-ms-md border border-ms-border bg-ms-surface shadow-card">
-          <div className="border-b border-ms-border px-5 py-4">
+          <section className="mt-6 rounded-ms-md border border-ms-border bg-ms-surface shadow-card transition-all duration-500 ms-fade-rise">
+            <div className="border-b border-ms-border px-5 py-4">
             <h2 className="flex items-center gap-2 font-semibold text-ms-textPrimary">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-brand" aria-hidden="true">
                 <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
@@ -310,7 +193,7 @@ export default function PatientLookupClient({
           <div className="max-h-56 min-h-[80px] overflow-y-auto px-5 py-4 space-y-3">
             {chat.length === 0 && (
               <p className="text-sm italic text-ms-textDisabled">
-                {t.ask_eg}
+                Ask about medicine availability, doctor availability, bed status, healthcare services, or nearby health centres.
               </p>
             )}
             {chat.map((m, i) => (
@@ -343,13 +226,37 @@ export default function PatientLookupClient({
             <div ref={chatEndRef} />
           </div>
 
+          <div className="border-t border-ms-border px-5 py-3 bg-ms-surface/50 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
+            <div className="flex gap-2 transition-all duration-300">
+              {[
+                "Paracetamol available?",
+                "Which PHC is nearest?",
+                "Are beds available?",
+                "Is a doctor available today?",
+                "Which CHC has X-ray?",
+                "Available in Hindi?"
+              ].map((suggestion, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => {
+                    setDraft(suggestion);
+                    document.getElementById('chat-input')?.focus();
+                  }}
+                  className="rounded-full border border-ms-border bg-ms-surface px-3 py-1.5 text-xs text-ms-textPrimary transition-all hover:border-brand hover:text-brand whitespace-nowrap shadow-sm"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
           <form onSubmit={sendChat} className="flex gap-2 border-t border-ms-border px-5 py-4">
             <input
               id="chat-input"
               type="text"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder={t.ask_placeholder}
+              placeholder="Type your healthcare question..."
               className="
                 flex-1 rounded-ms-sm border border-ms-border bg-ms-bg px-4 py-3
                 text-sm text-ms-textPrimary placeholder:text-ms-textDisabled
@@ -372,6 +279,7 @@ export default function PatientLookupClient({
             </button>
           </form>
         </section>
+        )}
       </main>
     </div>
   );
