@@ -1,6 +1,7 @@
 import { getCurrentStaff } from "@/lib/auth/context";
 import NavBar from "@/components/landing/NavBar";
 import HeroSection from "@/components/landing/HeroSection";
+import TrustedPartners from "@/components/landing/TrustedPartners";
 import TrustSection from "@/components/landing/TrustSection";
 import AboutSection from "@/components/landing/AboutSection";
 import WhoUsesSection from "@/components/landing/WhoUsesSection";
@@ -23,6 +24,7 @@ export default async function RootPage() {
       
       <main>
         <HeroSection />
+        <TrustedPartners />
         <TrustSection />
         <div id="about">
           <AboutSection />
