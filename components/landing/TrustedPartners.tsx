@@ -13,7 +13,7 @@ const partners = [
 
 export default function TrustedPartners() {
   return (
-    <section className="relative overflow-hidden py-20 sm:py-28 bg-white">
+    <section className="relative overflow-hidden py-24 sm:py-32 bg-white">
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes infinite-marquee {
           0% { transform: translateX(0); }
@@ -43,11 +43,11 @@ export default function TrustedPartners() {
         <div className="h-[400px] w-[800px] rounded-full bg-brand opacity-[0.06] blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-content mx-auto px-4 sm:px-6 text-center mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl font-bold text-ms-textPrimary tracking-tight mb-4">
+      <div className="relative z-10 max-w-content mx-auto px-4 sm:px-6 text-center mb-16 sm:mb-20">
+        <h2 className="text-4xl sm:text-5xl font-bold text-ms-textPrimary tracking-tight mb-5">
           Trusted Healthcare Partners
         </h2>
-        <p className="text-base sm:text-lg text-ms-textSecondary max-w-2xl mx-auto">
+        <p className="text-lg sm:text-xl text-ms-textSecondary max-w-2xl mx-auto">
           Connecting citizens with trusted healthcare providers across Faridabad.
         </p>
       </div>
@@ -62,15 +62,15 @@ export default function TrustedPartners() {
             When the container translates -50%, it seamlessly resets. */}
         <div className="flex w-max min-w-full animate-infinite-marquee items-center pl-4 sm:pl-8">
           {[...partners, ...partners].map((partner, i) => (
-            <div key={`${partner.name}-${i}`} className="shrink-0 pr-6 sm:pr-10">
-              <div className="group relative flex h-[110px] w-[200px] sm:h-[130px] sm:w-[240px] items-center justify-center rounded-[20px] border border-ms-border/60 bg-white/80 p-6 shadow-card backdrop-blur-md transition-all duration-300 hover:-translate-y-[6px] hover:scale-[1.03] hover:shadow-card-lg hover:border-ms-border cursor-pointer">
-                <div className="relative h-full w-full">
+            <div key={`${partner.name}-${i}`} className="shrink-0 pr-8">
+              <div className="group relative flex h-[110px] w-[220px] sm:h-[120px] sm:w-[240px] items-center justify-center rounded-2xl border border-ms-border/40 bg-white shadow-sm transition-all duration-300 hover:-translate-y-[6px] hover:shadow-card-lg">
+                <div className="relative h-full w-full p-5 sm:p-7 flex items-center justify-center">
                   <Image
                     src={partner.logo}
                     alt={`${partner.name} Logo`}
                     fill
-                    className="object-contain opacity-[0.85] transition-opacity duration-300 group-hover:opacity-100 grayscale-[20%] group-hover:grayscale-0"
-                    sizes="(max-width: 640px) 200px, 240px"
+                    className="object-contain p-5 sm:p-6 opacity-90 transition-all duration-300 group-hover:opacity-100 group-hover:scale-105"
+                    sizes="(max-width: 640px) 220px, 240px"
                     loading="lazy"
                     aria-label={partner.name}
                   />

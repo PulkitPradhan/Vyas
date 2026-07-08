@@ -24,6 +24,10 @@ const REASONS = [
     title: "District Ready",
     description: "Supports PHCs and CHCs across districts.",
   },
+  {
+    title: "Predictive Alerts",
+    description: "AI predicts medicine shortages, doctor absence, and equipment issues before they become critical.",
+  },
 ];
 
 export default function WhyVayasSection() {
@@ -45,7 +49,7 @@ export default function WhyVayasSection() {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-center">
           {REASONS.map((reason, index) => (
             <motion.div
               key={index}
@@ -53,12 +57,12 @@ export default function WhyVayasSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-ms-xl flex items-start gap-4 hover:bg-white/15 transition-colors"
+              className="group h-full bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-[20px] flex items-start gap-4 transition-all duration-300 hover:-translate-y-[6px] hover:bg-white/15 hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)]"
             >
-              <CheckCircle2 className="w-6 h-6 text-brand-light shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-6 h-6 text-brand-light shrink-0 mt-0.5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" />
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">{reason.title}</h3>
-                <p className="text-brand-tint/80 text-sm">{reason.description}</p>
+                <h3 className="text-xl font-bold text-white mb-2">{reason.title}</h3>
+                <p className="text-brand-tint/90 text-sm leading-relaxed">{reason.description}</p>
               </div>
             </motion.div>
           ))}
