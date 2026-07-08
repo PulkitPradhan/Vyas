@@ -6,6 +6,7 @@ import { SyncProvider } from "@/lib/offline/sync-provider";
 import SyncBanner from "@/components/SyncBanner";
 import { MotionProvider } from "@/components/MotionProvider";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import ScrollToTop from "@/components/ScrollToTop";
 
 // Self-hosted via next/font: no render-blocking external stylesheet, fonts are
 // served same-origin with `font-display: swap` and preloaded automatically.
@@ -74,6 +75,7 @@ export default function RootLayout({
             <SmoothScrollProvider>
               <MotionProvider>
                 {children}
+                <ScrollToTop />
               </MotionProvider>
             </SmoothScrollProvider>
           </SyncProvider>
