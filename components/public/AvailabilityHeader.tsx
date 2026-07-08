@@ -51,12 +51,6 @@ export default function AvailabilityHeader() {
         <LangToggle />
         <div className="mx-1 h-4 w-px bg-ms-border" aria-hidden="true" />
         <ThemeToggle className="!border-transparent !px-2 !py-1" />
-        <Link
-          href="/"
-          className="rounded-full px-3 py-1.5 text-xs font-medium text-ms-textSecondary transition-colors hover:bg-ms-surface2 hover:text-ms-textPrimary"
-        >
-          {t.home}
-        </Link>
 
         {!pillCompact && (
           <span className="ml-1 hidden rounded-full border border-[#B8E2CA] bg-watch-tint px-2.5 py-1 text-xs font-medium text-watch md:inline-flex" data-no-invert>

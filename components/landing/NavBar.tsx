@@ -28,7 +28,7 @@ export default function NavBar({ staff }: NavBarProps) {
     <nav
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-ms-surface/80 backdrop-blur-md border-b border-ms-border shadow-sm py-3"
+          ? "bg-[#FFFFF0] dark:bg-ms-surface border-b border-ms-border shadow-md py-3"
           : "bg-transparent py-5"
       }`}
     >
@@ -53,7 +53,6 @@ export default function NavBar({ staff }: NavBarProps) {
 
         {/* Center Menu (Desktop) */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className="text-sm font-semibold text-ms-textPrimary hover:text-brand transition-colors">{t.nav_home}</Link>
           <Link href="/#features" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_features}</Link>
           <Link href="/#how-it-works" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_how_it_works}</Link>
           <Link href="/#who-uses" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_who_uses}</Link>
