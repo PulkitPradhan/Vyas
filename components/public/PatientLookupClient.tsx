@@ -129,7 +129,137 @@ const DEMO_CHCS = [
   }
 ];
 
-const DEMO_FILTERS = ["All", "Open Now", "Nearby", "High Rating", "Government"];
+const DEMO_PRIVATE = [
+  {
+    id: "pvt-1",
+    name: "Asian Institute of Medical Sciences (AIMS)",
+    location: "Badkal Flyover Road, Sector 21A, Faridabad, Haryana",
+    status: "Open 24×7",
+    rating: 4.8,
+    type: "Private Multi-Speciality Hospital",
+    services: ["Cardiology", "Cancer Care", "Neurology", "Orthopaedics", "Critical Care", "Emergency Medicine"],
+    certification: "",
+    phone: "+91 129 4253000",
+    emergency: "1067",
+    beds: 165,
+    medicines: "Fully Available",
+    doctors: 62,
+    aiInsight: "Emergency department operating normally.",
+  },
+  {
+    id: "pvt-2",
+    name: "Sarvodaya Hospital & Research Centre",
+    location: "YMCA Road, Sector 8, Faridabad, Haryana",
+    status: "Open 24×7",
+    rating: 4.7,
+    type: "Private Multi-Speciality Hospital",
+    services: ["Cardiology", "Oncology", "Dialysis", "ICU", "Radiology", "Emergency Care"],
+    certification: "",
+    phone: "+91 9654501414",
+    emergency: "105959",
+    beds: 143,
+    medicines: "95%",
+    doctors: 70,
+    aiInsight: "Normal patient flow today.",
+  },
+  {
+    id: "pvt-3",
+    name: "Accord Superspeciality Hospital",
+    location: "Budena Village, Sector 86, Faridabad, Haryana",
+    status: "Open 24×7",
+    rating: 4.7,
+    type: "Private Smart Hospital",
+    services: ["Neurology", "Cardiac Sciences", "Orthopaedics", "Nephrology", "Gastroenterology", "Robotic Surgery"],
+    certification: "",
+    phone: "+91 1293512000",
+    beds: 118,
+    medicines: "91%",
+    doctors: 58,
+    aiInsight: "No predicted shortages today.",
+  },
+  {
+    id: "pvt-4",
+    name: "Amrita Hospital",
+    location: "Sector 88, Faridabad, Haryana",
+    status: "Open 24×7",
+    rating: 4.9,
+    type: "Private Tertiary Care Hospital",
+    services: ["Cardiology", "Neurosciences", "Oncology", "Organ Transplant", "Robotic Surgery", "Critical Care"],
+    certification: "",
+    phone: "+91 1293521234",
+    email: "fbd@amritahospitals.org",
+    beds: 620,
+    medicines: "Fully Available",
+    doctors: 240,
+    aiInsight: "High bed availability across departments.",
+  },
+  {
+    id: "pvt-5",
+    name: "Yatharth Super Speciality Hospital",
+    location: "Plot No 9, Sector 20, Krishna Nagar, Faridabad",
+    status: "Open 24×7",
+    rating: 4.7,
+    type: "Private Super Speciality Hospital",
+    services: ["Cardiology", "Neurosciences", "Cancer Care", "Orthopaedics", "Urology", "Transplants"],
+    certification: "",
+    phone: "+91 7669999444",
+    beds: 152,
+    medicines: "92%",
+    doctors: 78,
+    aiInsight: "All emergency departments operational.",
+  },
+  {
+    id: "pvt-6",
+    name: "Metro Heart Institute with Multispeciality",
+    location: "Sector 16A, Faridabad, Haryana",
+    status: "Open 24×7",
+    rating: 4.8,
+    type: "Private NABH Accredited Hospital",
+    services: ["Cardiology", "Neurosciences", "Orthopaedics", "Oncology", "Nephrology", "Cardiothoracic Surgery"],
+    certification: "",
+    phone: "01294277777",
+    beds: 138,
+    medicines: "94%",
+    doctors: 82,
+    aiInsight: "Cardiac emergency services available 24×7.",
+  }
+];
+
+const getFilters = (facilityId: string | null) => {
+  if (facilityId === "Private") {
+    return ["All", "Open Now", "Emergency", "High Rating", "Nearby", "Multi-Speciality"];
+  }
+  return ["All", "Open Now", "Nearby", "High Rating", "Government"];
+};
+
+const getSuggestions = (facilityId: string | null) => {
+  if (facilityId === "Private") {
+    return [
+      "Which private hospital has ICU beds?",
+      "Book appointment at Asian Hospital",
+      "Nearest emergency hospital",
+      "Which hospital provides cancer treatment?",
+      "Which hospital has robotic surgery?",
+      "Which hospital has the highest bed availability?"
+    ];
+  }
+  if (facilityId === "CHC") {
+    return [
+      "Which CHC is nearest?",
+      "Are beds available at CHC Kurali?",
+      "Does CHC Tigaon provide vaccinations?",
+      "Is emergency care available?",
+      "Book appointment at CHC Kheri Kalan"
+    ];
+  }
+  return [
+      "Is paracetamol available?",
+      "Which PHC is nearest?",
+      "Are beds available?",
+      "Which doctor is on duty?",
+      "Is vaccination available?"
+  ];
+};
 
 export default function PatientLookupClient({
   facilities,
@@ -167,6 +297,7 @@ export default function PatientLookupClient({
   function selectFacility(id: string) {
     setFacilityId(id);
     setSearchQuery(""); // Reset search when switching facility types
+    setActiveFilter("All"); // Reset filter
   }
 
   async function sendChat(e: React.FormEvent) {
@@ -195,12 +326,13 @@ export default function PatientLookupClient({
   }
 
   const filteredFacilities = useMemo(() => {
-    let baseData = facilityId === "PHC" ? DEMO_PHCS : facilityId === "CHC" ? DEMO_CHCS : [];
+    let baseData = facilityId === "PHC" ? DEMO_PHCS : facilityId === "CHC" ? DEMO_CHCS : facilityId === "Private" ? DEMO_PRIVATE : [];
     let filtered = baseData;
     if (searchQuery) {
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        p.location.toLowerCase().includes(searchQuery.toLowerCase())
+        p.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.services.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
     if (activeFilter === "High Rating") {
@@ -208,6 +340,12 @@ export default function PatientLookupClient({
     }
     return filtered;
   }, [facilityId, searchQuery, activeFilter]);
+
+  const searchPlaceholder = facilityId === "Private" 
+    ? "Search private hospitals..." 
+    : `Search nearby ${facilityId}s...`;
+
+  const emptyStateNearbyText = facilityId === "Private" ? "private hospitals" : `${facilityId}s`;
 
   return (
     <div className="min-h-screen min-h-dvh bg-ms-bg">
@@ -298,7 +436,7 @@ export default function PatientLookupClient({
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {(facilityId === "PHC" || facilityId === "CHC") && (
+            {(facilityId === "PHC" || facilityId === "CHC" || facilityId === "Private") && (
               <div className="mb-8 ms-fade-rise max-w-5xl mx-auto">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
                   <div className="relative w-full sm:max-w-xs">
@@ -309,14 +447,14 @@ export default function PatientLookupClient({
                     </div>
                     <input
                       type="text"
-                      placeholder={`Search nearby ${facilityId}s...`}
+                      placeholder={searchPlaceholder}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-9 pr-4 py-2 border border-ms-border bg-ms-surface rounded-ms-sm text-sm text-ms-textPrimary focus:border-brand focus:ring-1 focus:ring-brand outline-none transition-colors shadow-sm"
                     />
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {DEMO_FILTERS.map(f => (
+                    {getFilters(facilityId).map(f => (
                       <button
                         key={f}
                         onClick={() => setActiveFilter(f)}
@@ -340,7 +478,7 @@ export default function PatientLookupClient({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-2 mb-2">
-                             <span className="bg-brand-tint text-brand text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-semibold border border-brand/20">Government</span>
+                             <span className="bg-brand-tint text-brand text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-semibold border border-brand/20">{facilityId === "Private" ? "Private" : "Government"}</span>
                              <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-watch bg-watch-tint px-2 py-0.5 rounded-full border border-watch/20">
                                 <span className="relative flex h-2 w-2">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-watch opacity-75"></span>
@@ -362,7 +500,7 @@ export default function PatientLookupClient({
                              <span className="line-clamp-2">{facility.location}</span>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                             {facility.services.slice(0,5).map(s => <span key={s} className="text-[11px] font-medium bg-ms-surface2 text-ms-textPrimary px-2.5 py-1 rounded-ms-sm border border-ms-border">{s}</span>)}
+                             {facility.services.slice(0,6).map(s => <span key={s} className="text-[11px] font-medium bg-ms-surface2 text-ms-textPrimary px-2.5 py-1 rounded-ms-sm border border-ms-border">{s}</span>)}
                           </div>
                         </div>
                       </div>
@@ -372,19 +510,19 @@ export default function PatientLookupClient({
                          <div className="grid grid-cols-2 gap-2">
                            <div className="bg-brand-tint/20 border border-brand/10 p-2.5 rounded-ms-sm">
                              <div className="text-[10px] text-brand uppercase font-bold tracking-wider mb-1 flex items-center gap-1">🛏️ Beds</div>
-                             <div className="text-sm font-semibold text-ms-textPrimary">{facility.beds} Available</div>
+                             <div className="text-sm font-semibold text-ms-textPrimary">{facility.beds} {typeof facility.beds === 'number' ? 'Beds' : ''} {facilityId === "Private" && typeof facility.beds === 'number' ? '' : 'Available'}</div>
                            </div>
                            <div className="bg-watch-tint/20 border border-watch/10 p-2.5 rounded-ms-sm">
-                             <div className="text-[10px] text-watch uppercase font-bold tracking-wider mb-1 flex items-center gap-1">💊 Medicines</div>
-                             <div className="text-sm font-semibold text-ms-textPrimary">{facility.medicines} Stock</div>
+                             <div className="text-[10px] text-watch uppercase font-bold tracking-wider mb-1 flex items-center gap-1">💊 {facilityId === "Private" ? "Pharmacy" : "Medicines"}</div>
+                             <div className="text-sm font-semibold text-ms-textPrimary">{facility.medicines} {facilityId !== "Private" && !facility.medicines.includes('Available') ? 'Stock' : ''}</div>
                            </div>
                            <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 p-2.5 rounded-ms-sm">
                              <div className="text-[10px] text-blue-600 dark:text-blue-400 uppercase font-bold tracking-wider mb-1 flex items-center gap-1">👨‍⚕️ Doctors</div>
-                             <div className="text-sm font-semibold text-ms-textPrimary">{facility.doctors} Available</div>
+                             <div className="text-sm font-semibold text-ms-textPrimary">{facility.doctors} {facilityId === "Private" ? "Specialists" : "Available"}</div>
                            </div>
                            <div className="bg-purple-50/50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800 p-2.5 rounded-ms-sm">
                              <div className="text-[10px] text-purple-600 dark:text-purple-400 uppercase font-bold tracking-wider mb-1 flex items-center gap-1">🧠 AI Insight</div>
-                             <div className="text-[11px] font-medium text-ms-textPrimary leading-tight">{facility.aiInsight}</div>
+                             <div className="text-[11px] font-medium text-ms-textPrimary leading-tight line-clamp-3">{facility.aiInsight}</div>
                            </div>
                          </div>
                          
@@ -393,7 +531,7 @@ export default function PatientLookupClient({
                               Book Appointment
                             </button>
                             <div className="flex gap-2">
-                               <button className="flex-1 bg-transparent border border-ms-border text-ms-textPrimary text-xs font-semibold py-2 rounded-ms-sm hover:border-brand hover:text-brand transition-all ms-press group-hover:scale-[1.01]">Bed Availability</button>
+                               <button className="flex-1 bg-transparent border border-ms-border text-ms-textPrimary text-xs font-semibold py-2 rounded-ms-sm hover:border-brand hover:text-brand transition-all ms-press group-hover:scale-[1.01]">Check Bed Availability</button>
                                <button className="flex-1 bg-transparent border border-ms-border text-ms-textPrimary text-xs font-semibold py-2 rounded-ms-sm hover:border-brand hover:text-brand transition-all ms-press flex items-center justify-center gap-1.5 group-hover:scale-[1.01]">
                                  <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
@@ -429,7 +567,7 @@ export default function PatientLookupClient({
               <div className="max-h-56 min-h-[80px] overflow-y-auto px-5 py-4 space-y-3">
                 {chat.length === 0 && (
                   <p className="text-sm italic text-ms-textDisabled max-w-md">
-                    Ask about medicines,<br/>beds,<br/>doctor availability,<br/>vaccination,<br/>or nearby {facilityId === "Private" ? "Private Health Centres" : `${facilityId}s`}...
+                    Ask about medicines,<br/>beds,<br/>doctor availability,<br/>vaccination,<br/>or nearby {emptyStateNearbyText}...
                   </p>
                 )}
                 {chat.map((m, i) => (
@@ -464,19 +602,7 @@ export default function PatientLookupClient({
 
               <div className="border-t border-ms-border px-5 py-3 bg-ms-surface/50 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                 <div className="flex gap-2 transition-all duration-300">
-                  {(facilityId === "CHC" ? [
-                    "Which CHC is nearest?",
-                    "Are beds available at CHC Kurali?",
-                    "Does CHC Tigaon provide vaccinations?",
-                    "Is emergency care available?",
-                    "Book appointment at CHC Kheri Kalan"
-                  ] : [
-                    "Is paracetamol available?",
-                    "Which PHC is nearest?",
-                    "Are beds available?",
-                    "Which doctor is on duty?",
-                    "Is vaccination available?"
-                  ]).map((suggestion, i) => (
+                  {getSuggestions(facilityId).map((suggestion, i) => (
                     <button
                       key={i}
                       type="button"
