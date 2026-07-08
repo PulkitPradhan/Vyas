@@ -49,7 +49,7 @@ export default function HeroSection() {
               {t.staff_signin_btn}
             </Link>
             <Link
-              href="/public"
+              href="/availability"
               className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-ms-surface border border-ms-border text-ms-textPrimary font-bold text-base shadow-sm transition-all duration-300 hover:border-brand-light hover:text-brand hover:shadow-brand active:scale-95 bg-white/80 backdrop-blur-sm"
             >
               {t.public_lookup_btn}
