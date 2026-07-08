@@ -14,4 +14,5 @@ export interface Facility {
   medicines: string;
   doctors: number | string;
   aiInsight: string;
+  logo?: string;
 }
