@@ -1,21 +1,26 @@
+"use client";
+
 import CategoryCard from "@/components/public/CategoryCard";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function AvailabilityPage() {
+  const { t } = useLanguage();
+
   return (
     <main className="mx-auto max-w-5xl px-4 pb-12 pt-6 sm:px-6">
       <div className="mb-10 max-w-3xl mx-auto text-center ms-fade-rise">
         <h1 className="text-section font-bold text-ms-textPrimary mb-3 tracking-tight">
-          Check Service Availability
+          {t.avail_title}
         </h1>
         <p className="text-sm sm:text-base text-ms-textSecondary max-w-xl mx-auto leading-relaxed">
-          Select a healthcare facility type below to view live bed capacity, medicine stock, doctor availability, and specialized AI insights.
+          {t.avail_subtitle}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         <CategoryCard
-          title="Primary Health Centre (PHC)"
-          description="Basic healthcare, maternal care, minor treatments, and routine OPD services."
+          title={t.phc_title}
+          description={t.phc_desc}
           href="/availability/phc"
           icon={
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
@@ -24,8 +29,8 @@ export default function AvailabilityPage() {
           }
         />
         <CategoryCard
-          title="Community Health Centre (CHC)"
-          description="Advanced outpatient care, child healthcare, basic lab services, and specialized treatments."
+          title={t.chc_title}
+          description={t.chc_desc}
           href="/availability/chc"
           icon={
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
@@ -39,8 +44,8 @@ export default function AvailabilityPage() {
           }
         />
         <CategoryCard
-          title="Private Health Centre"
-          description="Premium multi-speciality hospitals, ICUs, cancer care, advanced surgery, and 24x7 emergency."
+          title={t.private_title}
+          description={t.private_desc}
           href="/availability/private"
           icon={
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">

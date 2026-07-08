@@ -118,12 +118,12 @@ export default function FacilityClient({ facilityType, facilities }: Props) {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-4">
+      <div className="mb-4 sm:hidden">
         <Link href="/availability" className="inline-flex items-center text-sm font-medium text-ms-textSecondary hover:text-brand transition-colors group">
           <svg className="w-4 h-4 mr-1 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to Categories
+          {t.back_to_categories || "Back to Categories"}
         </Link>
       </div>
 
