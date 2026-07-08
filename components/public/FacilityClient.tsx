@@ -65,7 +65,9 @@ export default function FacilityClient({ facilityType, facilities }: Props) {
   const [activeFilter, setActiveFilter] = useState("All");
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chat.length > 0) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [chat]);
 
   async function sendChat(e: React.FormEvent) {
@@ -173,7 +175,7 @@ export default function FacilityClient({ facilityType, facilities }: Props) {
               <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
               <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
             </svg>
-            Ask Vayas AI
+            Ask Vyas AI
             <span className="ml-auto text-xs text-ms-textDisabled">EN & हिं</span>
           </h2>
         </div>

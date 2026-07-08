@@ -44,13 +44,13 @@ export default function HeroSection() {
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-brand text-white font-bold text-base transition-all duration-300 hover:bg-brand-hover hover:shadow-[0_8px_30px_rgba(15,110,92,0.3)] active:scale-95"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-brand text-white font-bold text-base transition-all duration-300 hover:bg-brand-hover hover:shadow-brand active:scale-95"
             >
               {t.staff_signin_btn}
             </Link>
             <Link
               href="/availability"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-ms-surface border border-ms-border text-ms-textPrimary font-bold text-base shadow-sm transition-all duration-300 hover:border-brand-light hover:text-brand hover:shadow-brand active:scale-95 bg-white/80 backdrop-blur-sm"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-ms-surface/80 border border-ms-border text-ms-textPrimary font-bold text-base shadow-sm transition-all duration-300 hover:border-brand-light hover:text-brand hover:shadow-brand active:scale-95 backdrop-blur-sm"
             >
               {t.public_lookup_btn}
             </Link>
@@ -69,7 +69,7 @@ export default function HeroSection() {
             <m.div
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="absolute top-[calc(50%-90px)] left-[calc(50%-170px)] w-[340px] bg-ms-surface/90 backdrop-blur-xl border border-white/60 shadow-card-lg rounded-2xl p-6 z-20"
+              className="absolute top-[calc(50%-90px)] left-[calc(50%-170px)] w-[340px] bg-ms-surface/90 backdrop-blur-xl border border-ms-border shadow-card-lg rounded-2xl p-6 z-20"
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -100,7 +100,7 @@ export default function HeroSection() {
             <m.div
               animate={{ y: [0, 15, 0] }}
               transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-              className="absolute top-[calc(50%-170px)] left-[calc(50%-280px)] w-[200px] bg-white/90 backdrop-blur-md shadow-card border border-ms-border rounded-xl p-4 z-30"
+              className="absolute top-[calc(50%-170px)] left-[calc(50%-280px)] w-[200px] bg-ms-surface/90 backdrop-blur-md shadow-card border border-ms-border rounded-xl p-4 z-30"
             >
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center">
@@ -116,7 +116,7 @@ export default function HeroSection() {
             <m.div
               animate={{ y: [0, -20, 0] }}
               transition={{ repeat: Infinity, duration: 7, ease: "easeInOut", delay: 2 }}
-              className="absolute top-[calc(50%+30px)] left-[calc(50%+40px)] w-[240px] bg-white/90 backdrop-blur-md shadow-card border border-ms-border rounded-xl p-4 z-30"
+              className="absolute top-[calc(50%+30px)] left-[calc(50%+40px)] w-[240px] bg-ms-surface/90 backdrop-blur-md shadow-card border border-ms-border rounded-xl p-4 z-30"
             >
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-watch-tint text-watch flex items-center justify-center shrink-0">
@@ -133,7 +133,7 @@ export default function HeroSection() {
             <m.div
               animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut", delay: 0.5 }}
-              className="absolute top-[calc(50%+40px)] left-[calc(50%-250px)] w-[180px] bg-white/90 backdrop-blur-md shadow-card border border-ms-border rounded-xl p-4 z-10"
+              className="absolute top-[calc(50%+40px)] left-[calc(50%-250px)] w-[180px] bg-ms-surface/90 backdrop-blur-md shadow-card border border-ms-border rounded-xl p-4 z-10"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-warning-tint text-warning flex items-center justify-center">

@@ -5,7 +5,7 @@ import { CheckCircle2 } from "lucide-react";
 
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
-export default function WhyVayasSection() {
+export default function WhyVyasSection() {
   const { t } = useLanguage();
 
   const REASONS = [
@@ -36,7 +36,7 @@ export default function WhyVayasSection() {
   ];
 
   return (
-    <section className="py-24 bg-brand relative overflow-hidden">
+    <section id="why-vyas" className="py-24 bg-brand relative overflow-hidden">
       {/* Decorative Background */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[80px]" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-hover/50 rounded-full blur-[100px]" />
@@ -49,7 +49,7 @@ export default function WhyVayasSection() {
             viewport={{ once: true }}
             className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-white tracking-tight"
           >
-            {t.why_vayas_title}
+            {t.why_vyas_title}
           </m.h2>
         </div>
 

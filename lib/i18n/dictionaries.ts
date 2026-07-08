@@ -193,7 +193,11 @@ export const dict = {
     footer_2:
       "Built for India's primary healthcare system · Offline-first · Open source",
     nav_home: "Home",
-    nav_about: "About Vayas",
+    nav_features: "Features",
+    nav_why_vyas: "Why Vyas",
+    nav_how_it_works: "How it Works",
+    nav_who_uses: "Who Uses Vyas",
+    nav_about: "About Vyas",
     nav_support: "Help & Support",
     nav_contact: "Contact Us",
     nav_staff_signin: "Staff Sign In",
@@ -205,13 +209,13 @@ export const dict = {
     trust_3_desc: "Live visibility into district healthcare resources.",
     trust_4_title: "Bilingual",
     trust_4_desc: "Designed for both English and Hindi.",
-    about_title: "What is Vayas?",
+    about_title: "What is Vyas?",
     about_p1:
-      "Vayas is an AI-powered district healthcare operations platform built to help Primary Health Centres (PHCs) and Community Health Centres (CHCs) stay one step ahead of operational challenges.",
+      "Vyas is an AI-powered district healthcare operations platform built to help Primary Health Centres (PHCs) and Community Health Centres (CHCs) stay one step ahead of operational challenges.",
     about_p2:
-      "By providing real-time visibility into medicine stock, bed availability, doctor attendance, and medical equipment status, Vayas enables healthcare workers and district administrators to make faster, better-informed decisions before shortages impact patient care.",
+      "By providing real-time visibility into medicine stock, bed availability, doctor attendance, and medical equipment status, Vyas enables healthcare workers and district administrators to make faster, better-informed decisions before shortages impact patient care.",
     about_p3:
-      "Designed with an offline-first approach, Vayas works reliably even in areas with poor internet connectivity, ensuring that critical healthcare information remains accessible whenever it's needed.",
+      "Designed with an offline-first approach, Vyas works reliably even in areas with poor internet connectivity, ensuring that critical healthcare information remains accessible whenever it's needed.",
     about_btn: "Learn More",
     about_system_online: "System Online",
     features_title: "Powerful Features",
@@ -244,15 +248,15 @@ export const dict = {
     faq_2_q: "Do I need to create an account to check healthcare services?",
     faq_2_a:
       "No. Citizens can search for available medicines, beds, doctors, and healthcare facilities without creating an account.",
-    faq_3_q: "Who can sign in to Vayas?",
+    faq_3_q: "Who can sign in to Vyas?",
     faq_3_a:
       "Authorized healthcare staff such as Doctors, ANMs, Nurses, Pharmacists, and District Administrators can securely sign in to manage healthcare resources.",
-    faq_4_q: "Does Vayas work without internet?",
+    faq_4_q: "Does Vyas work without internet?",
     faq_4_a:
-      "Yes. Vayas is designed with an offline-first architecture. Healthcare staff can continue working even with poor or unstable network connectivity, and data syncs automatically when the connection is restored.",
-    faq_5_q: "Which languages does Vayas support?",
+      "Yes. Vyas is designed with an offline-first architecture. Healthcare staff can continue working even with poor or unstable network connectivity, and data syncs automatically when the connection is restored.",
+    faq_5_q: "Which languages does Vyas support?",
     faq_5_a:
-      "Currently, Vayas supports both English and Hindi to ensure accessibility for healthcare workers and citizens.",
+      "Currently, Vyas supports both English and Hindi to ensure accessibility for healthcare workers and citizens.",
     faq_6_q: "How often is healthcare information updated?",
     faq_6_a:
       "Medicine availability, doctor attendance, bed status, and equipment updates are reflected in real time whenever new information is submitted.",
@@ -261,13 +265,13 @@ export const dict = {
       "Please report the issue through the Contact Us page or email our support team. Our administrators will verify and update the information promptly.",
     faq_8_q: "Is my personal information secure?",
     faq_8_a:
-      "Yes. Vayas follows secure authentication and modern data protection practices to keep user information safe.",
+      "Yes. Vyas follows secure authentication and modern data protection practices to keep user information safe.",
     faq_9_q:
       "How can healthcare staff update medicine stock or bed availability?",
     faq_9_a:
       "After signing in, authorized staff can update medicine inventory, bed occupancy, doctor attendance, and equipment status through a simple dashboard.",
-    faq_10_q: "How can I contact the Vayas support team?",
-    faq_10_a: "You can reach us anytime at:\\n📧 work.vayas@gmail.com",
+    faq_10_q: "How can I contact the Vyas support team?",
+    faq_10_a: "You can reach us anytime at:\\n📧 work.vyas@gmail.com",
     support_card_1_title: "Technical Support",
     support_card_1_desc:
       "Get help with login issues, platform access, or technical problems.",
@@ -276,9 +280,9 @@ export const dict = {
     support_card_3_desc: "Typically within 24 hours during business days.",
     contact_title: "Get in Touch",
     contact_desc:
-      "Have questions about Vayas, need technical support, or want to learn how the platform can help your district healthcare services? We'd love to hear from you.",
+      "Have questions about Vyas, need technical support, or want to learn how the platform can help your district healthcare services? We'd love to hear from you.",
     contact_info_1_title: "Email",
-    contact_info_1_text: "work.vayas@gmail.com",
+    contact_info_1_text: "work.vyas@gmail.com",
     contact_info_2_title: "Support Hours",
     contact_info_2_text: "Monday – Friday\\n9:00 AM – 7:00 PM (IST)",
     contact_info_3_title: "Response Time",
@@ -298,7 +302,7 @@ export const dict = {
     contact_form_msg_ph: "Write your message here...",
     contact_form_submit: "Send Message",
     contact_map_placeholder: "Office Location Mapping Soon",
-    who_uses_title: "Who Uses Vayas?",
+    who_uses_title: "Who Uses Vyas?",
     who_uses_1_title: "ANM / Nurse",
     who_uses_1_item1: "Quick patient counting",
     who_uses_1_item2: "Bed availability updates",
@@ -319,17 +323,17 @@ export const dict = {
     who_uses_5_item1: "Live operational dashboard",
     who_uses_5_item2: "AI-generated insights",
     who_uses_5_item3: "Resource redistribution recommendations",
-    how_it_works_title: "How Vayas Works",
+    how_it_works_title: "How Vyas Works",
     how_step1_title: "Step 1",
     how_step1_desc: "Healthcare staff update information.",
     how_step2_title: "Step 2",
-    how_step2_desc: "Vayas validates and syncs data.",
+    how_step2_desc: "Vyas validates and syncs data.",
     how_step3_title: "Step 3",
     how_step3_desc: "AI identifies shortages and service risks.",
     how_step4_title: "Step 4",
     how_step4_desc:
       "Citizens and district administrators receive accurate, real-time availability.",
-    why_vayas_title: "Why Vayas?",
+    why_vyas_title: "Why Vyas?",
     why_1_title: "Offline First",
     why_1_desc: "Built for unreliable networks.",
     why_2_title: "Fast Updates",
@@ -348,7 +352,7 @@ export const dict = {
     footer_faqs: "FAQs",
     footer_privacy: "Privacy Policy",
     footer_terms: "Terms & Conditions",
-    footer_rights: "© 2026 Vayas. All rights reserved.",
+    footer_rights: "© 2026 Vyas. All rights reserved.",
     footer_built: "Built for better public healthcare.",
   },
   hi: {
@@ -545,6 +549,10 @@ export const dict = {
     footer_2:
       "भारत की प्राथमिक स्वास्थ्य सेवा प्रणाली के लिए निर्मित · ऑफ़लाइन-फर्स्ट · ओपन सोर्स",
     nav_home: "होम",
+    nav_features: "विशेषताएं",
+    nav_why_vyas: "व्यास क्यों",
+    nav_how_it_works: "यह कैसे काम करता है",
+    nav_who_uses: "व्यास का उपयोग कौन करता है",
     nav_about: "व्यास के बारे में",
     nav_support: "मदद और समर्थन",
     nav_contact: "संपर्क करें",
@@ -621,7 +629,7 @@ export const dict = {
       "साइन इन करने के बाद, अधिकृत कर्मचारी एक साधारण डैशबोर्ड के माध्यम से दवा सूची, बिस्तर अधिभोग, डॉक्टर की उपस्थिति और उपकरण की स्थिति को अपडेट कर सकते हैं।",
     faq_10_q: "मैं व्यास सहायता टीम से कैसे संपर्क कर सकता हूँ?",
     faq_10_a:
-      "आप हमसे किसी भी समय संपर्क कर सकते हैं:\\n📧 work.vayas@gmail.com",
+      "आप हमसे किसी भी समय संपर्क कर सकते हैं:\\n📧 work.vyas@gmail.com",
     support_card_1_title: "तकनीकी सहायता",
     support_card_1_desc:
       "लॉगिन समस्याओं, प्लेटफ़ॉर्म एक्सेस या तकनीकी समस्याओं के लिए सहायता प्राप्त करें।",
@@ -632,7 +640,7 @@ export const dict = {
     contact_desc:
       "व्यास के बारे में प्रश्न हैं, तकनीकी सहायता चाहिए, या यह जानना चाहते हैं कि मंच आपके जिला स्वास्थ्य सेवाओं की मदद कैसे कर सकता है? हम आपसे सुनना पसंद करेंगे।",
     contact_info_1_title: "ईमेल",
-    contact_info_1_text: "work.vayas@gmail.com",
+    contact_info_1_text: "work.vyas@gmail.com",
     contact_info_2_title: "समर्थन घंटे",
     contact_info_2_text:
       "सोमवार - शुक्रवार\\nसुबह 9:00 बजे - शाम 7:00 बजे (IST)",
@@ -684,7 +692,7 @@ export const dict = {
     how_step4_title: "कदम 4",
     how_step4_desc:
       "नागरिकों और जिला प्रशासकों को सटीक, वास्तविक समय की उपलब्धता प्राप्त होती है।",
-    why_vayas_title: "व्यास क्यों?",
+    why_vyas_title: "व्यास क्यों?",
     why_1_title: "ऑफ़लाइन पहले",
     why_1_desc: "अविश्वसनीय नेटवर्क के लिए निर्मित।",
     why_2_title: "तेज़ अपडेट",

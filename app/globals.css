@@ -64,41 +64,56 @@
 }
 
 /* ─────────────────────────────────────────────────
-   Theme Toggle — CSS filter invert (white default)
-   .theme-dark applied to <html> by ThemeToggle
-   Uses hue-rotate(180deg) to restore natural hues
-   after invert flips them.
+   Theme Toggle — Native CSS Variables Dark Mode
 ───────────────────────────────────────────────── */
 html.theme-dark {
-  /* Override light backgrounds before inversion so they become gray instead of OLED black */
-  --ms-bg: #E5E5E5;
-  --ms-surface: #DBDBDB;
-  --ms-surface-2: #D1D1D1;
-  
-  filter: invert(1) hue-rotate(180deg);
-}
+  /* Backgrounds */
+  --ms-bg:          #121212;
+  --ms-surface:     #1E1E1E;
+  --ms-surface-2:   #2C2C2C;
 
-/* Images/videos and brand/green colors must be double-inverted so they look natural in dark mode */
-html.theme-dark img,
-html.theme-dark video,
-html.theme-dark iframe,
-html.theme-dark canvas,
-html.theme-dark .bg-brand,
-html.theme-dark .text-brand,
-html.theme-dark .shadow-brand,
-html.theme-dark .bg-watch,
-html.theme-dark .text-watch,
-html.theme-dark .bg-watch-tint,
-html.theme-dark .shadow-watch,
-html.theme-dark [data-no-invert] {
-  filter: invert(1) hue-rotate(180deg);
+  /* Text */
+  --ms-text-primary:   #F9FAFB;
+  --ms-text-secondary: #A1A1AA;
+  --ms-text-disabled:  #52525B;
+
+  /* Borders */
+  --ms-border:      #3F3F46;
+  --ms-border-focus:#4DD0B7;
+
+  /* Brand */
+  --ms-brand:       #16A388;
+  --ms-brand-hover: #138E76;
+  --ms-brand-tint:  rgba(22, 163, 136, 0.15);
+  --ms-brand-light: #4DD0B7;
+
+  /* Severity */
+  --ms-critical:      #EF4444;
+  --ms-critical-tint: rgba(239, 68, 68, 0.15);
+  --ms-critical-shadow: rgba(239, 68, 68, 0.15);
+  --ms-warning:       #F59E0B;
+  --ms-warning-tint:  rgba(245, 158, 11, 0.15);
+  --ms-warning-shadow: rgba(245, 158, 11, 0.15);
+  --ms-watch:         #10B981;
+  --ms-watch-tint:    rgba(16, 185, 129, 0.15);
+  --ms-watch-shadow:  rgba(16, 185, 129, 0.15);
+
+  /* Shadows */
+  --ms-shadow-card:  0 4px 12px rgba(0,0,0,0.5);
+  --ms-shadow-lg:    0 8px 32px rgba(0,0,0,0.6);
+  --ms-shadow-brand: 0 4px 20px rgba(22, 163, 136, 0.20);
 }
 
 /* ─────────────────────────────────────────────────
-   Base Reset
+   Base Reset & Typography
 ───────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-outfit), var(--font-inter), sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* ─────────────────────────────────────────────────
@@ -127,6 +142,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hindi text — switch to Noto Sans Devanagari */

@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Noto_Sans_Devanagari } from "next/font/google";
+import { Inter, Noto_Sans_Devanagari, Nunito, Outfit } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import { SyncProvider } from "@/lib/offline/sync-provider";
 import SyncBanner from "@/components/SyncBanner";
 import { MotionProvider } from "@/components/MotionProvider";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
 // Self-hosted via next/font: no render-blocking external stylesheet, fonts are
 // served same-origin with `font-display: swap` and preloaded automatically.
@@ -20,6 +21,20 @@ const notoDevanagari = Noto_Sans_Devanagari({
   subsets: ["devanagari"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-devanagari",
+  display: "swap",
+});
+
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-nunito",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800", "900"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -51,14 +66,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${notoDevanagari.variable}`}>
+    <html lang="en" className={`${inter.variable} ${notoDevanagari.variable} ${nunito.variable} ${outfit.variable}`}>
       <body className="min-h-screen bg-ms-bg font-sans text-ms-textPrimary antialiased">
         <LanguageProvider>
           <SyncProvider>
             <SyncBanner />
-            <MotionProvider>
-              {children}
-            </MotionProvider>
+            <SmoothScrollProvider>
+              <MotionProvider>
+                {children}
+              </MotionProvider>
+            </SmoothScrollProvider>
           </SyncProvider>
         </LanguageProvider>
       </body>

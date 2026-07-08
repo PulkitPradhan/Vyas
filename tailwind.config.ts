@@ -10,38 +10,39 @@ const config: Config = {
     extend: {
       colors: {
         /* Severity — functional use only */
-        critical: "#D64545",
-        warning:  "#C98A1F",
-        watch:    "#2E8B57",
+        critical: "var(--ms-critical)",
+        warning:  "var(--ms-warning)",
+        watch:    "var(--ms-watch)",
 
         /* Brand teal */
         brand: {
-          DEFAULT: "#0F6E5C",
-          hover:   "#0A5548",
-          tint:    "#E3F3EF",
-          light:   "#B6E2D9",
+          DEFAULT: "var(--ms-brand)",
+          hover:   "var(--ms-brand-hover)",
+          tint:    "var(--ms-brand-tint)",
+          light:   "var(--ms-brand-light)",
         },
 
         /* Surface system */
         ms: {
-          bg:        "#FAFAF8",
-          surface:   "#FFFFFF",
-          surface2:  "#F3F4F6",
-          border:    "#E4E7EB",
-          textPrimary:   "#14181C",
-          textSecondary: "#5B6470",
-          textDisabled:  "#9CA3AF",
+          bg:            "var(--ms-bg)",
+          surface:       "var(--ms-surface)",
+          surface2:      "var(--ms-surface-2)",
+          border:        "var(--ms-border)",
+          textPrimary:   "var(--ms-text-primary)",
+          textSecondary: "var(--ms-text-secondary)",
+          textDisabled:  "var(--ms-text-disabled)",
         },
 
         /* Severity tints */
-        "critical-tint": "#FBEAEA",
-        "warning-tint":  "#FBF2E1",
-        "watch-tint":    "#E9F5EE",
+        "critical-tint": "var(--ms-critical-tint)",
+        "warning-tint":  "var(--ms-warning-tint)",
+        "watch-tint":    "var(--ms-watch-tint)",
       },
 
       fontFamily: {
         // Backed by next/font CSS variables (self-hosted; see app/layout.tsx).
         sans:  ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        heading: ["var(--font-outfit)", "var(--font-inter)", "sans-serif"],
         hindi: ["var(--font-devanagari)", "var(--font-inter)", "sans-serif"],
       },
 

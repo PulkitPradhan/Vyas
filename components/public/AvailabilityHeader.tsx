@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import LangToggle from "@/components/LangToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -32,11 +33,14 @@ export default function AvailabilityHeader() {
         aria-label="Patient lookup navigation"
       >
         <div className={`flex items-center gap-2 transition-all duration-200 ${pillCompact ? "gap-1.5" : ""}`}>
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-white">
-            <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-              <path d="M9 12h6M12 9v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
+          <div className="flex h-8 w-8 items-center justify-center">
+            <Image
+              src="/assets/vyas-logo.png"
+              alt="Vyas Logo"
+              width={32}
+              height={32}
+              className="object-contain"
+            />
           </div>
           {!pillCompact && (
             <span className="hidden sm:inline text-sm font-semibold text-ms-textPrimary">Vyas</span>

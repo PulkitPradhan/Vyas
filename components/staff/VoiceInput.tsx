@@ -200,7 +200,7 @@ export default function VoiceInput({ facilityId, language, items, onApplied }: P
             ? "bg-sky-600 text-white"
             : phase === "confirm"
             ? "bg-amber-500 text-white"
-            : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+            : "border border-ms-border bg-ms-surface text-ms-textPrimary hover:bg-ms-surface2"
         }`}
       >
         <span aria-hidden>🎙️</span>
@@ -229,7 +229,7 @@ export default function VoiceInput({ facilityId, language, items, onApplied }: P
             <button
               type="button"
               onClick={cancel}
-              className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-white"
+              className="rounded-md border border-ms-border px-3 py-1 text-sm hover:bg-ms-surface"
             >
               Cancel
             </button>

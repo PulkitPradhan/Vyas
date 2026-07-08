@@ -32,7 +32,7 @@ export default function HowItWorksSection() {
   ];
 
   return (
-    <section className="py-24 bg-ms-bg relative">
+    <section id="how-it-works" className="py-24 bg-ms-bg relative">
       <div className="max-w-content mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <m.h2 
@@ -60,7 +60,7 @@ export default function HowItWorksSection() {
                 className="flex flex-col items-center text-center relative"
               >
                 {/* Timeline Node */}
-                <div className="w-24 h-24 rounded-full bg-white shadow-card border-4 border-brand-tint flex items-center justify-center mb-6 relative z-10">
+                <div className="w-24 h-24 rounded-full bg-ms-surface shadow-card border-4 border-brand-tint flex items-center justify-center mb-6 relative z-10">
                   <step.icon className="w-10 h-10 text-brand" />
                   
                   {/* Pulse effect */}

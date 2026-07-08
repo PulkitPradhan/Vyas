@@ -34,9 +34,9 @@ export default function FooterSection() {
             <h4 className="font-bold text-ms-textPrimary mb-6">{t.footer_quick_links}</h4>
             <ul className="space-y-4">
               <li><Link href="/" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_home}</Link></li>
-              <li><Link href="/#about" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_about}</Link></li>
-              <li><Link href="/#support" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_support}</Link></li>
-              <li><Link href="/#contact" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_contact}</Link></li>
+              <li><Link href="/#features" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_features}</Link></li>
+              <li><Link href="/#how-it-works" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_how_it_works}</Link></li>
+              <li><Link href="/#who-uses" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.nav_who_uses}</Link></li>
             </ul>
           </div>
 
@@ -44,7 +44,6 @@ export default function FooterSection() {
           <div>
             <h4 className="font-bold text-ms-textPrimary mb-6">{t.footer_resources}</h4>
             <ul className="space-y-4">
-              <li><Link href="/#support" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.footer_faqs}</Link></li>
               <li><Link href="/privacy" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.footer_privacy}</Link></li>
               <li><Link href="/terms" className="text-sm text-ms-textSecondary hover:text-brand transition-colors">{t.footer_terms}</Link></li>
             </ul>
@@ -55,9 +54,9 @@ export default function FooterSection() {
             <h4 className="font-bold text-ms-textPrimary mb-6">{t.footer_contact}</h4>
             <ul className="space-y-4">
               <li>
-                <a href="mailto:work.vayas@gmail.com" className="flex items-center gap-2 text-sm text-ms-textSecondary hover:text-brand transition-colors">
+                <a href="mailto:work.vyas@gmail.com" className="flex items-center gap-2 text-sm text-ms-textSecondary hover:text-brand transition-colors">
                   <Mail className="w-4 h-4" />
-                  work.vayas@gmail.com
+                  work.vyas@gmail.com
                 </a>
               </li>
             </ul>

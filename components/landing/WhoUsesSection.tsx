@@ -37,7 +37,7 @@ export default function WhoUsesSection() {
   ];
 
   return (
-    <section className="py-24 bg-ms-surface border-y border-ms-border relative overflow-hidden">
+    <section id="who-uses" className="py-24 bg-ms-surface border-y border-ms-border relative overflow-hidden">
       {/* Decorative background element */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-brand-tint/30 to-transparent pointer-events-none" />
 
@@ -62,7 +62,7 @@ export default function WhoUsesSection() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white/60 backdrop-blur-xl border border-white/60 shadow-card rounded-2xl p-8 hover:shadow-brand transition-all duration-300"
+              className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-ms-surface/80 backdrop-blur-xl border border-ms-border shadow-card rounded-2xl p-8 hover:shadow-brand transition-all duration-300"
             >
               <div className="w-14 h-14 rounded-full bg-brand-tint flex items-center justify-center text-brand mb-6 shadow-sm border border-brand-light/50">
                 <user.icon className="w-7 h-7" />

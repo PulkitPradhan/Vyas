@@ -34,23 +34,29 @@ export default function NavBar({ staff }: NavBarProps) {
     >
       <div className="mx-auto flex max-w-content items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/assets/vayas-logo.png"
-            alt="Vayas Logo"
+            src="/assets/vyas-logo.png"
+            alt="Vyas Logo"
             width={0}
             height={0}
             sizes="100vw"
             className="h-[46px] w-auto opacity-100 transition-opacity duration-300 hover:opacity-80"
           />
+          <span 
+            className="text-xl font-bold tracking-tight text-brand hidden sm:block"
+            style={{ fontFamily: 'var(--font-nunito)' }}
+          >
+            Vyas
+          </span>
         </Link>
 
         {/* Center Menu (Desktop) */}
         <div className="hidden md:flex items-center gap-8">
           <Link href="/" className="text-sm font-semibold text-ms-textPrimary hover:text-brand transition-colors">{t.nav_home}</Link>
-          <Link href="/#about" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_about}</Link>
-          <Link href="/#support" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_support}</Link>
-          <Link href="/#contact" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_contact}</Link>
+          <Link href="/#features" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_features}</Link>
+          <Link href="/#how-it-works" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_how_it_works}</Link>
+          <Link href="/#who-uses" className="text-sm font-semibold text-ms-textSecondary hover:text-brand transition-colors">{t.nav_who_uses}</Link>
         </div>
 
         {/* Right Controls */}
@@ -61,6 +67,13 @@ export default function NavBar({ staff }: NavBarProps) {
           <div className="hidden sm:block">
             <ThemeToggle />
           </div>
+
+          <Link
+            href="/availability"
+            className="hidden sm:flex rounded-full border border-brand/30 bg-brand/5 px-4 sm:px-5 py-2.5 text-sm font-semibold text-brand transition-all hover:bg-brand/10 hover:border-brand/50 active:scale-95"
+          >
+            Check Availability
+          </Link>
           
           {staff ? (
             <div className="flex items-center gap-3">

@@ -52,7 +52,7 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="py-24 bg-ms-surface border-t border-ms-border">
+    <section id="features" className="py-24 bg-ms-surface border-t border-ms-border">
       <div className="max-w-content mx-auto px-4 sm:px-6">
         <div className="text-center mb-20">
           <m.h2 
@@ -75,7 +75,7 @@ export default function FeaturesSection() {
               transition={{ duration: 0.6 }}
               className="group flex flex-col sm:flex-row items-start sm:items-center gap-6 p-8 rounded-ms-2xl bg-ms-bg border border-ms-border hover:shadow-brand hover:border-brand-light transition-all duration-300"
             >
-              <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-brand-light/40 flex items-center justify-center text-brand shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 rounded-2xl bg-ms-surface shadow-sm border border-brand-light/40 flex items-center justify-center text-brand shrink-0 group-hover:scale-110 transition-transform duration-300">
                 <feature.icon className="w-8 h-8" />
               </div>
               <div>
