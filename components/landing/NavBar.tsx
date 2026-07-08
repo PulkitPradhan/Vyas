@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 import LangToggle from "@/components/LangToggle";
 import SignOutButton from "@/components/SignOutButton";
@@ -31,17 +32,16 @@ export default function NavBar({ staff }: NavBarProps) {
     >
       <div className="mx-auto flex max-w-content items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-ms-sm bg-brand text-white shadow-sm">
-            <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-              <path d="M12 12v4M12 8v2M9 12h6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <span className="text-xl font-bold tracking-tight text-ms-textPrimary">
-            Vayas
-          </span>
-        </div>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/assets/vayas-logo.png"
+            alt="Vayas Logo"
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="h-[46px] w-auto opacity-100 transition-opacity duration-300 hover:opacity-80"
+          />
+        </Link>
 
         {/* Center Menu (Desktop) */}
         <div className="hidden md:flex items-center gap-8">
