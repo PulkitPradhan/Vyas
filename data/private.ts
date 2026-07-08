@@ -16,6 +16,7 @@ export const DEMO_PRIVATE: Facility[] = [
     medicines: "Fully Available",
     doctors: 62,
     aiInsight: "Emergency department operating normally.",
+    logo: "/logos/asian.png",
   },
   {
     id: "pvt-2",
@@ -32,6 +33,7 @@ export const DEMO_PRIVATE: Facility[] = [
     medicines: "95%",
     doctors: 70,
     aiInsight: "Normal patient flow today.",
+    logo: "/logos/sarvodaya.png",
   },
   {
     id: "pvt-3",
@@ -47,6 +49,7 @@ export const DEMO_PRIVATE: Facility[] = [
     medicines: "91%",
     doctors: 58,
     aiInsight: "No predicted shortages today.",
+    logo: "/logos/accord.png",
   },
   {
     id: "pvt-4",
@@ -63,6 +66,7 @@ export const DEMO_PRIVATE: Facility[] = [
     medicines: "Fully Available",
     doctors: 240,
     aiInsight: "High bed availability across departments.",
+    logo: "/logos/amrita.png",
   },
   {
     id: "pvt-5",
@@ -78,6 +82,7 @@ export const DEMO_PRIVATE: Facility[] = [
     medicines: "92%",
     doctors: 78,
     aiInsight: "All emergency departments operational.",
+    logo: "/logos/yatharth.png",
   },
   {
     id: "pvt-6",
@@ -93,5 +98,6 @@ export const DEMO_PRIVATE: Facility[] = [
     medicines: "94%",
     doctors: 82,
     aiInsight: "Cardiac emergency services available 24×7.",
+    logo: "/logos/metro.png",
   }
 ];

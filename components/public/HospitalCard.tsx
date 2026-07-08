@@ -1,4 +1,5 @@
 import { Facility } from "@/data/types";
+import Image from "next/image";
 
 interface Props {
   facility: Facility;
@@ -14,11 +15,26 @@ export default function HospitalCard({ facility, facilityType, index }: Props) {
     >
       {/* Left Side: Info */}
       <div className="flex-1 flex flex-col sm:flex-row gap-5">
-        <div className="w-full sm:w-36 h-36 bg-ms-surface2 rounded-ms-sm flex-shrink-0 flex items-center justify-center border border-ms-border overflow-hidden">
-          <svg className="w-12 h-12 text-ms-textDisabled" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-        </div>
+        {facility.logo ? (
+          <div className="w-full sm:w-36 h-36 bg-white rounded-ms-sm flex-shrink-0 flex items-center justify-center border border-ms-border overflow-hidden relative">
+            <div className="relative w-full h-[70px] px-4">
+              <Image
+                src={facility.logo}
+                alt={`${facility.name} Logo`}
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 100vw, 144px"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="w-full sm:w-36 h-36 bg-ms-surface2 rounded-ms-sm flex-shrink-0 flex items-center justify-center border border-ms-border overflow-hidden">
+            <svg className="w-12 h-12 text-ms-textDisabled" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className="bg-brand-tint text-brand text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-semibold border border-brand/20">
