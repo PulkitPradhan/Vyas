@@ -9,7 +9,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function AvailabilityHeader() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const pathname = usePathname();
   const [pillCompact, setPillCompact] = useState(false);
   const lastScrollY = useRef(0);
@@ -24,18 +24,23 @@ export default function AvailabilityHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const showBack = pathname !== "/availability" && pathname?.startsWith("/availability/");
+  const isAvailabilityHome = pathname === "/availability";
+  const isAvailabilitySubpage = pathname?.startsWith("/availability/") && !isAvailabilityHome;
+  const showBack = isAvailabilityHome || isAvailabilitySubpage;
+  
+  const backHref = isAvailabilityHome ? "/" : "/availability";
+  const backText = isAvailabilityHome ? (language === 'hi' ? 'होम' : 'Home') : (t.back_to_categories || "Back");
 
   return (
     <header className="fixed top-0 left-0 right-0 w-full z-40 flex justify-center px-4 pt-3 pb-2 pointer-events-none">
       <div className="w-full max-w-5xl relative flex justify-center items-center">
         {showBack && (
           <div className="absolute left-0 pointer-events-auto hidden sm:block">
-            <Link href="/availability" className="inline-flex items-center text-sm font-medium px-4 py-2 rounded-full bg-ms-surface border border-ms-border shadow-sm text-ms-textSecondary hover:text-brand transition-colors duration-200">
+            <Link href={backHref} className="inline-flex items-center text-sm font-medium px-4 py-2 rounded-full bg-ms-surface border border-ms-border shadow-sm text-ms-textSecondary hover:text-brand transition-colors duration-200">
               <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              {t.back_to_categories || "Back"}
+              {backText}
             </Link>
           </div>
         )}

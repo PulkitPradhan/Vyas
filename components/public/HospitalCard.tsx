@@ -104,6 +104,7 @@ export default function HospitalCard({ facility, facilityType, index }: Props) {
 
         <div className="flex flex-col gap-2 mt-auto">
           <button 
+            type="button"
             onClick={() => alert("Book Appointment functionality will be available in Phase 3.")}
             className="w-full bg-brand text-white text-sm font-semibold py-2.5 rounded-ms-sm shadow-brand hover:bg-brand-hover transition-all ms-press hover:shadow-brand-lg group-hover:scale-[1.01] flex justify-center items-center gap-1.5"
           >
@@ -111,12 +112,14 @@ export default function HospitalCard({ facility, facilityType, index }: Props) {
           </button>
           <div className="flex gap-2">
             <button 
+              type="button"
               onClick={() => alert("Check Bed Availability functionality will be available in Phase 3.")}
               className="flex-1 bg-transparent border border-ms-border text-ms-textPrimary text-xs font-semibold py-2 rounded-ms-sm hover:border-brand hover:text-brand transition-all ms-press group-hover:scale-[1.01]"
             >
               Check Bed Availability
             </button>
             <button 
+              type="button"
               onClick={() => alert("Call Now functionality will be available in Phase 3.")}
               className="flex-1 bg-transparent border border-ms-border text-ms-textPrimary text-xs font-semibold py-2 rounded-ms-sm hover:border-brand hover:text-brand transition-all ms-press flex items-center justify-center gap-1.5 group-hover:scale-[1.01]"
             >

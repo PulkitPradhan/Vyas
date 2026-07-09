@@ -36,7 +36,7 @@ export interface PatientTestStatus {
 
 import { createServerClient } from "@/lib/supabase/server";
 
-export async function listFacilities(): Promise<PatientFacility[]> {
+async function listFacilities(): Promise<PatientFacility[]> {
   const supabase = await createServerClient();
   const { data } = await supabase
     .from("facilities")

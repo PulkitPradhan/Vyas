@@ -147,6 +147,7 @@ export default function FacilityClient({ facilityType, facilities }: Props) {
             {getFilters(facilityType).map(f => (
               <button
                 key={f}
+                type="button"
                 onClick={() => setActiveFilter(f)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${activeFilter === f ? 'bg-brand text-white shadow-brand-sm' : 'bg-ms-surface border border-ms-border text-ms-textSecondary hover:border-brand/50 hover:text-ms-textPrimary'}`}
               >
